@@ -5,6 +5,7 @@ function TrelloClient () {
   this.apiSecret = null;
   this.clientToken = null;   // Required to see non public boards
   this.username = null;
+  this.openBoards = [];
 }
 
 // If the user is logged into Trello, we can get his API key and secret for him
@@ -99,7 +100,9 @@ TrelloClient.prototype.getAllBoards = function (cb) {
     , callback = cb || function() {};  
 
   $.ajax({ url: "https://api.trello.com/1/members/" + this.username + "/boards?key=" + this.apiKey + "&token=" + this.clientToken }).done(function(data) {
-    console.log(data);
+    self.openBoards = _.filter(data, function(board) { return board.closed === false; });
+    console.log(self);
+    console.log(_.pluck(self.openBoards, 'name'));
   });
 
 
@@ -111,8 +114,6 @@ tc.getApiCredentials(function() {
   tc.getClientToken(function () {
     tc.getLoggedUsername(function(err) {
       console.log("-----------------");
-      console.log(err);
-      console.log(tc);
       tc.getAllBoards();
     });
   });
