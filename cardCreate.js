@@ -52,7 +52,8 @@ TrelloClient.prototype.getClientToken = function(cb) {
 
   if (!this.apiKey) { return callback("Can't request token without an API key"); }
 
-  $.ajax({ url: "https://trello.com/1/authorize?key=" + self.apiKey + "&name=TrelloCapture&expiration=never&response_type=token" }).done(function(data) {
+  // TODO: check the scope is right
+  $.ajax({ url: "https://trello.com/1/authorize?key=" + self.apiKey + "&name=TrelloCapture&expiration=never&response_type=token&scope=read,write" }).done(function(data) {
     try {
       var html = $($.parseHTML(data))
         , approve = "Allow"
@@ -150,35 +151,122 @@ var tc = new TrelloClient();
   // });
 // });
 
-console.log("-----------------");
-console.log(tc);
-tc.getAllBoards(function () {
-  var persoBoard = _.find(tc.openBoards, function(board) { return board.name === "Perso" });
+// console.log("-----------------");
+// console.log(tc);
+// tc.getAllBoards(function () {
+  // var persoBoard = _.find(tc.openBoards, function(board) { return board.name === "Perso" });
   
-  console.log(persoBoard);
+  // console.log(persoBoard);
   
-  tc.getAllCurrentLists(persoBoard.id, function () {
-    var doingList = _.find(tc.currentLists, function (list) { return list.name === "Doing" });
+  // tc.getAllCurrentLists(persoBoard.id, function () {
+    // var doingList = _.find(tc.currentLists, function (list) { return list.name === "Doing" });
     
-    console.log(doingList);
+    // console.log(doingList);
     
-    tc.getAllCurrentCards(doingList.id, function () {
-      var card = _.find(tc.currentCards, function (card) { return card.name === "Test" });
+    // tc.getAllCurrentCards(doingList.id, function () {
+      // var card = _.find(tc.currentCards, function (card) { return card.name === "Test" });
     
-      console.log(card);
+      // console.log(card);
     
-    });
-  });
-});
-
-
-
-// chrome.runtime.onMessage.addListener(
-  // function(request, sender, sendResponse) {
-    // console.log("--- RECEIVED MESSAGE");
-    // console.log(request);
-   
-    // $('#screenshot').attr('src', request.imageData);
+      // $.ajax({ type: 'POST'
+      // , url: ""
+      // , data: {}
+      // }).done(function(data) {
+        // console.log("----- SUCCESS");
+        // console.log(data);
+      // }).fail(function(err) {
+        // console.log("----- FAIL");
+        // console.log(err);
+      // });
     
-
+    
+    // });
+  // });
 // });
+
+
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    console.log("--- RECEIVED MESSAGE");
+    console.log(request);
+   
+    $('#screenshot').attr('src', request.imageData);
+    
+    // $('#uploadForm');
+    
+    
+    var imgData = request.imageData.substring(23);
+    window.imgData = imgData;
+    
+    
+    var byteString = atob(imgData);
+    
+    var length = byteString.length;
+    var ab = new ArrayBuffer(length);
+    var ua = new Uint8Array(ab);
+    for (var i = 0; i < length; i++) {
+        ua[i] = byteString.charCodeAt(i);
+    }
+    
+    // var builder = new BlobBuilder();
+    // builder.append(ab);
+    // var blob = builder.getBlob("image/jpeg");
+    
+    var blob = new Blob([ab], { type: "image/jpeg" });    
+    window.$b = blob;
+    
+    var formData = new FormData();
+    formData.append("key", "24257e0901edabbc2c28518cff71b9c8");
+    formData.append("token", "d1a6496ac11d257c7fb0d1d59639a65b29cbe98bcc4d72c50b1d74e3f835196c");
+    formData.append("file", blob);
+    
+    var req = new XMLHttpRequest();
+    req.open("POST", "https://api.trello.com/1/cards/52d2fcf9aaa82dcb061b2e36/attachments");
+    req.send(formData);
+    
+    // $('#uploadScreenshot').attr("files", [request.imageData]);
+    
+    
+      // POSTING IMAGE TO TRELLO
+      // var tc = new TrelloClient();
+      // console.log("-----------------");
+      // console.log(tc);
+      // tc.getAllBoards(function () {
+        // var persoBoard = _.find(tc.openBoards, function(board) { return board.name === "Perso" });
+        
+        // console.log(persoBoard);
+        
+        // tc.getAllCurrentLists(persoBoard.id, function () {
+          // var doingList = _.find(tc.currentLists, function (list) { return list.name === "Doing" });
+          
+          // console.log(doingList);
+          
+          // tc.getAllCurrentCards(doingList.id, function () {
+            // var card = _.find(tc.currentCards, function (card) { return card.name === "Test" });
+          
+            // console.log(card);
+          
+            // $.ajax({ type: 'POST'
+            // , url: "https://api.trello.com/1/cards/" + card.id + "/attachments?key=" + tc.apiKey + "&token=" + tc.clientToken
+            // , data: { file: request.imageData
+                    // , enctype: "multipart/form-data"
+                    // , mimeType: "image/jpeg"
+                    // , url: null
+                    // }
+            // }).done(function(data) {
+              // console.log("----- SUCCESS");
+              // console.log(data);
+            // }).fail(function(err) {
+              // console.log("----- FAIL");
+              // console.log(err);
+            // });
+          
+          
+          // });
+        // });
+      // });
+    
+    
+
+});

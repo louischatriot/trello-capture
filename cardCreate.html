@@ -4,6 +4,15 @@
 
 <body>
 HELLO WORLD<br><br>
+
+<form action="https://api.trello.com/1/cards/52d2fcf9aaa82dcb061b2e36/attachments"
+      method="POST" enctype="multipart/form-data" id="uploadForm">
+   <input type="hidden" name="key" value="24257e0901edabbc2c28518cff71b9c8" />
+   <input type="hidden" name="token" value="d1a6496ac11d257c7fb0d1d59639a65b29cbe98bcc4d72c50b1d74e3f835196c" />
+   <input type="file" name="file" id="uploadScreenshot">
+   <input type="submit" value="Upload">
+</form>
+
 <img id="screenshot">
 
 <script src="jquery-2.0.3.min.js"></script>
