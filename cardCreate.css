@@ -1,0 +1,13 @@
+#left-pane {
+  background-color: #bbb;
+  width: 20%;
+  height: 100%;
+  float: left;
+}
+
+#screenshot-pane {
+  width: 80%;
+  height: 100%;
+  float: right;
+  background-repeat: no-repeat;
+}

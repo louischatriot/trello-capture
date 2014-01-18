@@ -219,7 +219,10 @@ chrome.runtime.onMessage.addListener(
     console.log("--- RECEIVED MESSAGE");
     console.log(request);
    
-    $('#screenshot').attr('src', request.imageData);
+   
+    $('#screenshot-pane').css('background-image', 'url(' + request.imageData + ')');
+   
+    $('#screenshot-pane img').attr('src', request.imageData);
 
     // var tc = new TrelloClient();
     // tc.attachBase64ImageToCard("52d2fcf9aaa82dcb061b2e36", request.imageData);
