@@ -12,6 +12,8 @@ function TrelloClient () {
   this.username = window.creds.username;
   
   this.openBoards = [];
+  this.currentLists = [];
+  this.currentCards = [];
 }
 
 // If the user is logged into Trello, we can get his API key and secret for him
@@ -107,25 +109,67 @@ TrelloClient.prototype.getAllBoards = function (cb) {
 
   $.ajax({ url: "https://api.trello.com/1/members/" + this.username + "/boards?key=" + this.apiKey + "&token=" + this.clientToken }).done(function(data) {
     self.openBoards = _.filter(data, function(board) { return board.closed === false; });
-    console.log(self);
-    console.log(_.pluck(self.openBoards, 'name'));
+    return callback(null);
+  }).fail(function() {
+    return callback("Unauthorized access");
   });
-
-
 };
 
+
+TrelloClient.prototype.getAllCurrentLists = function (boardId, cb) {
+  var self = this
+    , callback = cb || function() {};
+    
+  $.ajax({ url: "https://api.trello.com/1/boards/" + boardId + "/lists?key=" + this.apiKey + "&token=" + this.clientToken }).done(function(data) {
+    self.currentLists = _.filter(data, function (list) { return list.closed === false; });
+    return callback(null);
+  }).fail(function() {
+    return callback("Unauthorized access");
+  });
+};
+
+
+TrelloClient.prototype.getAllCurrentCards = function (listId, cb) {
+  var self = this
+    , callback = cb || function() {};
+    
+  $.ajax({ url: "https://api.trello.com/1/lists/" + listId + "/cards?key=" + this.apiKey + "&token=" + this.clientToken }).done(function(data) {
+    self.currentCards = _.filter(data, function (card) { return card.closed === false; });
+    return callback(null);
+  }).fail(function() {
+    return callback("Unauthorized access");
+  });
+};
 
 var tc = new TrelloClient();
 // tc.getApiCredentials(function() {
   // tc.getClientToken(function () {
     // tc.getLoggedUsername(function(err) {
-      console.log("-----------------");
-      console.log(tc);
-      // tc.getAllBoards();
+
     // });
   // });
 // });
 
+console.log("-----------------");
+console.log(tc);
+tc.getAllBoards(function () {
+  var persoBoard = _.find(tc.openBoards, function(board) { return board.name === "Perso" });
+  
+  console.log(persoBoard);
+  
+  tc.getAllCurrentLists(persoBoard.id, function () {
+    var doingList = _.find(tc.currentLists, function (list) { return list.name === "Doing" });
+    
+    console.log(doingList);
+    
+    tc.getAllCurrentCards(doingList.id, function () {
+      var card = _.find(tc.currentCards, function (card) { return card.name === "Test" });
+    
+      console.log(card);
+    
+    });
+  });
+});
 
 
 
