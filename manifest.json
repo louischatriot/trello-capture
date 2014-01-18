@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+  "name": "Trello Capture",
+  "description": "Take a screenshot and put it in a Trello card in seconds",
+  "version": "0.1",
+  "permissions": [
+    "tabs",
+    "*://*/*"
+  ],
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_title": "Create a card"
+  },
+  "background": {
+    "scripts": ["eventPage.js"],
+    "persistent": false
+  }
+}
