@@ -4,12 +4,14 @@ function TrelloClient () {
   this.apiKey = null;
   this.apiSecret = null;
   this.clientToken = null;   // Required to see non public boards
+  this.username = null;
 }
 
 // If the user is logged into Trello, we can get his API key and secret for him
 // The callback takes an err argument
-TrelloClient.prototype.getApiCredentials = function (callback) {
-  var self = this;
+TrelloClient.prototype.getApiCredentials = function (cb) {
+  var self = this
+    , callback = cb || function() {};
 
   $.ajax({ url: "https://trello.com/1/appKey/generate" }).done(function (data) {
     try {
@@ -34,8 +36,10 @@ TrelloClient.prototype.getApiCredentials = function (callback) {
 
 // Simulates the user requesting then accepting a client token for this application
 // The callback takes only one err argument
-TrelloClient.prototype.getClientToken = function(callback) {
-  var self = this;
+TrelloClient.prototype.getClientToken = function(cb) {
+  var self = this
+    , callback = cb || function() {};
+
 
   if (!this.apiKey) { return callback("Can't request token without an API key"); }
 
@@ -73,9 +77,28 @@ TrelloClient.prototype.getClientToken = function(callback) {
   });
 };
 
+// Simulates going to the frontpage and scrape the username
+// If this.username is not populated, it means user is not logged in
+// Callback takes one err argument
+TrelloClient.prototype.getLoggedUsername = function (cb) {
+  var self = this
+    , callback = cb || function() {};
 
-TrelloClient.prototype.getAllBoards = function (callback) {
-  $.ajax({ url: "https://api.trello.com/1/members/louischatriot/boards?key=" + this.apiKey + "&token=" + this.clientToken }).done(function(data) {
+  
+  $.ajax({ url: "https://trello.com/1/Members/me" }).done(function (data) {
+    self.username = data.username;
+    return callback(null);
+  }).fail(function () {
+    return callback("Unauthorized access");
+  });
+};
+
+
+TrelloClient.prototype.getAllBoards = function (cb) {
+  var self = this
+    , callback = cb || function() {};  
+
+  $.ajax({ url: "https://api.trello.com/1/members/" + this.username + "/boards?key=" + this.apiKey + "&token=" + this.clientToken }).done(function(data) {
     console.log(data);
   });
 
@@ -84,15 +107,16 @@ TrelloClient.prototype.getAllBoards = function (callback) {
 
 
 var tc = new TrelloClient();
-// tc.getApiCredentials(function() {
-  // tc.getClientToken(function () {
-
-  tc.getAllBoards();
-
-
-
-  // });
-// });
+tc.getApiCredentials(function() {
+  tc.getClientToken(function () {
+    tc.getLoggedUsername(function(err) {
+      console.log("-----------------");
+      console.log(err);
+      console.log(tc);
+      tc.getAllBoards();
+    });
+  });
+});
 
 
 
