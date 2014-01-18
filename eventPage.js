@@ -11,8 +11,18 @@
      
       createdTabUrl = chrome.extension.getURL('cardCreate.html');
       
-      // Todo place it to the right of the current tab
-      chrome.tabs.create({ url: createdTabUrl }, onTabCreated);
+      chrome.tabs.query({ active: true }, function (tabs) {
+        var i, tab;
+
+        // Only select the current active tab, not any background tab or dev tools
+        for (i = 0; i < tabs.length; i += 1) {
+          if (tabs[i].url.match(/^http/)) {
+            tab = tabs[i];
+          }
+        }
+        
+        chrome.tabs.create({ url: createdTabUrl, index: tab.index + 1 }, onTabCreated);
+      });
     });
   }
 
