@@ -219,7 +219,7 @@ chrome.runtime.onMessage.addListener(
     var formData = new FormData();
     formData.append("key", "24257e0901edabbc2c28518cff71b9c8");
     formData.append("token", "d1a6496ac11d257c7fb0d1d59639a65b29cbe98bcc4d72c50b1d74e3f835196c");
-    formData.append("file", blob);
+    formData.append("file", blob, "helloworld.jpg");
     
     var req = new XMLHttpRequest();
     req.open("POST", "https://api.trello.com/1/cards/52d2fcf9aaa82dcb061b2e36/attachments");
