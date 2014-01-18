@@ -185,6 +185,32 @@ var tc = new TrelloClient();
 // });
 
 
+// Take as input a base64-encoded image (for example given by the tabs API screenshot)
+// And send attach it to a Trello card
+TrelloClient.prototype.attachBase64ImageToCard = function(cardId, imageData) {
+  var imgData = imageData.substring(23)
+    , byteString = atob(imgData)
+    , length = byteString.length
+    , ab = new ArrayBuffer(length)
+    , ua = new Uint8Array(ab)
+    , blob, formData, request, i
+    ;
+    
+  for (i = 0; i < length; i++) {
+      ua[i] = byteString.charCodeAt(i);
+  }
+  
+  blob = new Blob([ab], { type: "image/jpeg" });
+  formData = new FormData();
+  formData.append("key", this.apiKey);
+  formData.append("token", this.clientToken);
+  formData.append("file", blob, "helloworld.jpg");    // TODO slugify title or beginning of title
+  
+  request = new XMLHttpRequest();
+  request.open("POST", "https://api.trello.com/1/cards/" + cardId + "/attachments");
+  request.send(formData);
+}
+
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -192,81 +218,7 @@ chrome.runtime.onMessage.addListener(
     console.log(request);
    
     $('#screenshot').attr('src', request.imageData);
-    
-    // $('#uploadForm');
-    
-    
-    var imgData = request.imageData.substring(23);
-    window.imgData = imgData;
-    
-    
-    var byteString = atob(imgData);
-    
-    var length = byteString.length;
-    var ab = new ArrayBuffer(length);
-    var ua = new Uint8Array(ab);
-    for (var i = 0; i < length; i++) {
-        ua[i] = byteString.charCodeAt(i);
-    }
-    
-    // var builder = new BlobBuilder();
-    // builder.append(ab);
-    // var blob = builder.getBlob("image/jpeg");
-    
-    var blob = new Blob([ab], { type: "image/jpeg" });    
-    window.$b = blob;
-    
-    var formData = new FormData();
-    formData.append("key", "24257e0901edabbc2c28518cff71b9c8");
-    formData.append("token", "d1a6496ac11d257c7fb0d1d59639a65b29cbe98bcc4d72c50b1d74e3f835196c");
-    formData.append("file", blob, "helloworld.jpg");
-    
-    var req = new XMLHttpRequest();
-    req.open("POST", "https://api.trello.com/1/cards/52d2fcf9aaa82dcb061b2e36/attachments");
-    req.send(formData);
-    
-    // $('#uploadScreenshot').attr("files", [request.imageData]);
-    
-    
-      // POSTING IMAGE TO TRELLO
-      // var tc = new TrelloClient();
-      // console.log("-----------------");
-      // console.log(tc);
-      // tc.getAllBoards(function () {
-        // var persoBoard = _.find(tc.openBoards, function(board) { return board.name === "Perso" });
         
-        // console.log(persoBoard);
-        
-        // tc.getAllCurrentLists(persoBoard.id, function () {
-          // var doingList = _.find(tc.currentLists, function (list) { return list.name === "Doing" });
-          
-          // console.log(doingList);
-          
-          // tc.getAllCurrentCards(doingList.id, function () {
-            // var card = _.find(tc.currentCards, function (card) { return card.name === "Test" });
-          
-            // console.log(card);
-          
-            // $.ajax({ type: 'POST'
-            // , url: "https://api.trello.com/1/cards/" + card.id + "/attachments?key=" + tc.apiKey + "&token=" + tc.clientToken
-            // , data: { file: request.imageData
-                    // , enctype: "multipart/form-data"
-                    // , mimeType: "image/jpeg"
-                    // , url: null
-                    // }
-            // }).done(function(data) {
-              // console.log("----- SUCCESS");
-              // console.log(data);
-            // }).fail(function(err) {
-              // console.log("----- FAIL");
-              // console.log(err);
-            // });
-          
-          
-          // });
-        // });
-      // });
-    
-    
-
+    var tc = new TrelloClient();
+    tc.attachBase64ImageToCard("52d2fcf9aaa82dcb061b2e36", request.imageData);
 });
