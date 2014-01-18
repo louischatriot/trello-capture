@@ -5,6 +5,12 @@ function TrelloClient () {
   this.apiSecret = null;
   this.clientToken = null;   // Required to see non public boards
   this.username = null;
+  
+  this.apiKey = window.creds.apiKey;
+  this.apiSecret = window.creds.apiSecret;
+  this.clientToken = window.creds.clientToken;
+  this.username = window.creds.username;
+  
   this.openBoards = [];
 }
 
@@ -110,14 +116,15 @@ TrelloClient.prototype.getAllBoards = function (cb) {
 
 
 var tc = new TrelloClient();
-tc.getApiCredentials(function() {
-  tc.getClientToken(function () {
-    tc.getLoggedUsername(function(err) {
+// tc.getApiCredentials(function() {
+  // tc.getClientToken(function () {
+    // tc.getLoggedUsername(function(err) {
       console.log("-----------------");
-      tc.getAllBoards();
-    });
-  });
-});
+      console.log(tc);
+      // tc.getAllBoards();
+    // });
+  // });
+// });
 
 
 
