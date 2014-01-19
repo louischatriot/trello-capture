@@ -1,12 +1,10 @@
 (function () {
   var createdTabUrl;
   var imageData;
-  
+
+  // TODO: manage multiple opened tab before screenshot send
   function buttonClicked() {
-    console.log('Clicked on the button');
-    
     chrome.tabs.captureVisibleTab(null, {}, function (image) {
-      console.log("===== Took screenshot =====");
       imageData = image;
      
       createdTabUrl = chrome.extension.getURL('cardCreate.html');
@@ -26,24 +24,17 @@
     });
   }
 
+  // TODO: more robust way to send image data to page ?
   function onTabCreated(tab) {
-    console.log("===== TAB CREATED =====");
-    console.log(tab);
-    console.log(imageData);
-    
-    // chrome.tabs.sendMessage(tab.id, "any message");
     setTimeout(function (){
       chrome.runtime.sendMessage({ imageData: imageData }, function(response) {
-        console.log('FAREWELL');
+        // Callback does nothing
       });
     }, 1000);
-    
-    
+        
     var views = chrome.extension.getViews();
     for (var i = 0; i < views.length; i++) {
       var view = views[i];
-        console.log(view);
-        console.log(view.location.href);
 
       // If this view has the right URL and hasn't been used yet...
       if (view.location.href == createdTabUrl) {
