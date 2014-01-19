@@ -3,7 +3,8 @@
  */
 
 var tc = new TrelloClient()
-  , currentImage;
+  , currentImage
+  ;
 
 
 function populateBoardsList(cb) {
@@ -44,6 +45,36 @@ function populateListsList(cb) {
 }
 
 
+// Validation. Quite custom but not a real issue here ...
+
+// Only validate text length. Wouldn't work if lower bound is greater than 1 of course but we're lucky here !
+function validateText(inputId, lowerBound, upperBound) {
+  return function() {
+    var $input = $(inputId)
+      , value = $input.val()
+      , $parentDiv = $input.parent()
+      , $errorMessage = $parentDiv.find('div.alert')
+      ;
+    
+    if (value.length >= lowerBound && value.length <= upperBound) {
+      $parentDiv.removeClass('has-error');
+      $errorMessage.css('display', 'none');
+      return true;
+    } else {
+      $parentDiv.addClass('has-error');  
+      $errorMessage.css('display', 'block');
+      return false;
+    }  
+  }
+}
+
+var validateCardName = validateText('#cardName', 1, 16384);
+$('#cardName').on('keyup', validateCardName);
+
+var validateCardDesc = validateText('#cardDesc', 0, 16384);
+$('#cardDesc').on('keyup', validateCardDesc);
+
+
 
 // =================================================
 
@@ -53,8 +84,10 @@ $('#boardsList').on('change', function() {
 
 $('#createCard').on('click', function () {
   if (!currentImage) { return; }
+  if (!validateCardName() || !validateCardDesc()) { return; }
   
-  var selectedListId = $('#listsList option:selected').val()
+  var selectedListId = $('#listsList option:selected').val();
+  
   tc.createCardOnTopOfCurrentList(selectedListId, $('#cardName').val(), $('#cardDesc').val(), function (err, cardId) {
     tc.attachBase64ImageToCard(cardId, currentImage);
   });

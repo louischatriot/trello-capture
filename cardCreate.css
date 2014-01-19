@@ -4,6 +4,8 @@
   height: 100%;
   float: left;
   padding: 20px;
+  box-sizing: border-box;
+  border-right: solid 1px black;
 }
 
 #screenshot-pane {

@@ -9,18 +9,28 @@
   <div id="left-pane">
     <h1>Trello Capture</h1><br><br>
 
-    <label>Board</label>
-    <select id="boardsList" class="form-control"></select><br>
+    <div class="form-group">
+      <label>Board</label>
+      <select id="boardsList" class="form-control"></select>
+    </div>
 
-    <label>List</label>
-    <select id="listsList" class="form-control"></select><br>
+    <div class="form-group">
+      <label>List</label>
+      <select id="listsList" class="form-control"></select>
+    </div>
 
-    <label>Card name</label>
-    <input type="text" id="cardName" class="form-control"><br>
+    <div class="form-group">
+      <label>Card name</label>
+      <input type="text" id="cardName" class="form-control">
+      <div class="alert alert-danger" style="margin-top: 5px; display: none;">The card name must be between 1 and 16384 characters</div>
+    </div>
 
-    <label>Description</label>
-    <textarea id="cardDesc" class="form-control" rows="3"></textarea><br><br>
-
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="cardDesc" class="form-control" rows="5"></textarea><br>
+      <div class="alert alert-danger" style="margin-top: 5px; display: none;">The card name must be between 0 and 16384 characters</div>
+    </div>
+    
     <input type="button" value="Create card" id="createCard" class="btn btn-primary">
   </div>
 
