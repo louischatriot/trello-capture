@@ -6,29 +6,34 @@
 </head>
 
 <body>
-<div id="left-pane">
-This pane will contain all controls needed to create the Trello card<br><br>
+  <div id="left-pane">
+    <h1>Trello Capture</h1><br><br>
 
-<select id="boardsList"></select><br><br>
-<select id="listsList"></select><br><br>
+    <label>Board</label>
+    <select id="boardsList" class="form-control"></select><br>
 
-Name: <input type="text" id="cardName"><br><br>
-Description: <input type="text" id="cardDesc"><br><br>
+    <label>List</label>
+    <select id="listsList" class="form-control"></select><br>
 
-<input type="button" value="Create card" id="createCard">
+    <label>Card name</label>
+    <input type="text" id="cardName" class="form-control"><br>
 
-</div>
+    <label>Description</label>
+    <textarea id="cardDesc" class="form-control" rows="3"></textarea><br><br>
 
-<div id="screenshot-pane">
-</div>
+    <input type="button" value="Create card" id="createCard" class="btn btn-primary">
+  </div>
+
+  <div id="screenshot-pane">
+  </div>
 
 
 
-<script src="lib/jquery-2.0.3.min.js"></script>
-<script src="lib/underscore-min.js"></script>
-<script src="lib/bootstrap.min.js"></script>
-<script src="devCreds.js"></script>
-<script src="trelloClient.js"></script>
-<script src="cardCreate.js"></script>
+  <script src="lib/jquery-2.0.3.min.js"></script>
+  <script src="lib/underscore-min.js"></script>
+  <script src="lib/bootstrap.min.js"></script>
+  <script src="devCreds.js"></script>
+  <script src="trelloClient.js"></script>
+  <script src="cardCreate.js"></script>
 </body>
 </html>

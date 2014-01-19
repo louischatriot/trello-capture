@@ -64,9 +64,9 @@ $('#createCard').on('click', function () {
 populateBoardsList(function() {
   $('#boardsList').trigger('change');
 });
-    
-    
-    
+
+
+
 // When we receive an image
 // TODO: Check how to right-size the image without changing its form too much, or accept parts of it being cut (i.e. JIRA Capture cuts the image)
 chrome.runtime.onMessage.addListener(
@@ -74,3 +74,6 @@ chrome.runtime.onMessage.addListener(
     $('#screenshot-pane').css('background-image', 'url(' + request.imageData + ')');
     currentImage = request.imageData;
 });
+
+
+
