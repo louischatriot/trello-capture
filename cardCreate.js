@@ -182,16 +182,14 @@ TrelloClient.prototype.getAllCurrentCards = function (listId, cb) {
 
 
 // Callback signature: err, createdCardId
-TrelloClient.prototype.createCardOnTopOfCurrentList = function (listId, cb) {
+TrelloClient.prototype.createCardOnTopOfCurrentList = function (listId, cardName, cardDesc, cb) {
   var self = this
     , callback = cb || function() {};
 
   $.ajax({ url: "https://api.trello.com/1/lists/" + listId + "/cards?key=" + this.apiKey + "&token=" + this.clientToken
          , type: 'POST'
-         , data: { name: "That's a NEW test" }
+         , data: { name: cardName, desc: cardDesc }
          }).done(function(data) {
-    console.log("------------");
-    console.log(data);
     return callback(null, data.id);
   }).fail(function() {
     return callback("Unauthorized access");
@@ -317,7 +315,7 @@ chrome.runtime.onMessage.addListener(
 
       console.log('----');
       console.log(selectedListId);
-      tc.createCardOnTopOfCurrentList(selectedListId, function (err, cardId) {
+      tc.createCardOnTopOfCurrentList(selectedListId, $('#cardName').val(), $('#cardDesc').val(), function (err, cardId) {
         tc.attachBase64ImageToCard(cardId, request.imageData);
       });
     });
