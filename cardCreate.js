@@ -117,6 +117,24 @@ TrelloClient.prototype.getAllBoards = function (cb) {
 };
 
 
+TrelloClient.prototype.populateBoardsList = function (cb) {
+  var self = this
+    , callback = cb || function() {};  
+
+  this.getAllBoards(function(err) {
+    var options = "";
+
+    if (err) { return callback(err); }
+    
+    self.openBoards.sort(function (a, b) { return a.name < b.name ? -1 : 1; }).forEach(function (board) {
+      options += '<option value="' + board.id + '">' + board.name + '</option>';
+    });
+    
+    $('#boardsList').html(options);
+  });
+};
+
+
 TrelloClient.prototype.getAllCurrentLists = function (boardId, cb) {
   var self = this
     , callback = cb || function() {};
@@ -126,6 +144,26 @@ TrelloClient.prototype.getAllCurrentLists = function (boardId, cb) {
     return callback(null);
   }).fail(function() {
     return callback("Unauthorized access");
+  });
+};
+
+
+TrelloClient.prototype.populateListsList = function (cb) {
+  var self = this
+    , callback = cb || function() {}
+    , selectedBoardId = $('#boardsList option:selected').val()
+    ;
+    
+  this.getAllCurrentLists(selectedBoardId, function (err) {
+    var options = "";
+
+    if (err) { return callback(err); }
+    
+    self.currentLists.sort(function (a, b) { return a.name < b.name ? -1 : 1; }).forEach(function (list) {
+      options += '<option value="' + list.id + '">' + list.name + '</option>';
+    });
+    
+    $('#listsList').html(options);  
   });
 };
 
@@ -142,7 +180,45 @@ TrelloClient.prototype.getAllCurrentCards = function (listId, cb) {
   });
 };
 
-var tc = new TrelloClient();
+
+// Callback signature: err, createdCardId
+TrelloClient.prototype.createCardOnTopOfCurrentList = function (listId, cb) {
+  var self = this
+    , callback = cb || function() {};
+
+  $.ajax({ url: "https://api.trello.com/1/lists/" + listId + "/cards?key=" + this.apiKey + "&token=" + this.clientToken
+         , type: 'POST'
+         , data: { name: "That's a NEW test" }
+         }).done(function(data) {
+    console.log("------------");
+    console.log(data);
+    return callback(null, data.id);
+  }).fail(function() {
+    return callback("Unauthorized access");
+  });
+};
+
+
+// ======================================================
+// var tc = new TrelloClient();
+
+// tc.populateBoardsList();
+
+// $('#boardsList').on('change', function() {
+  // tc.populateListsList();
+// });
+
+// $('#createCard').on('click', function () {
+  // var selectedListId = $('#listsList option:selected').val()
+
+  // console.log('----');
+  // console.log(selectedListId);
+  // tc.createCardOnTopOfCurrentList(selectedListId, function () {
+  
+  // });
+// });
+
+
 // tc.getApiCredentials(function() {
   // tc.getClientToken(function () {
     // tc.getLoggedUsername(function(err) {
@@ -214,6 +290,9 @@ TrelloClient.prototype.attachBase64ImageToCard = function(cardId, imageData) {
 }
 
 
+
+
+
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     console.log("--- RECEIVED MESSAGE");
@@ -224,6 +303,26 @@ chrome.runtime.onMessage.addListener(
    
     $('#screenshot-pane img').attr('src', request.imageData);
 
+    // =========================
+    var tc = new TrelloClient();
+
+    tc.populateBoardsList();
+
+    $('#boardsList').on('change', function() {
+      tc.populateListsList();
+    });
+
+    $('#createCard').on('click', function () {
+      var selectedListId = $('#listsList option:selected').val()
+
+      console.log('----');
+      console.log(selectedListId);
+      tc.createCardOnTopOfCurrentList(selectedListId, function (err, cardId) {
+        tc.attachBase64ImageToCard(cardId, request.imageData);
+      });
+    });
+    // =========================
+    
     // var tc = new TrelloClient();
     // tc.attachBase64ImageToCard("52d2fcf9aaa82dcb061b2e36", request.imageData);
 });
