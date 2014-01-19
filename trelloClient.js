@@ -115,24 +115,6 @@ TrelloClient.prototype.getAllBoards = function (cb) {
 };
 
 
-TrelloClient.prototype.populateBoardsList = function (cb) {
-  var self = this
-    , callback = cb || function() {};  
-
-  this.getAllBoards(function(err) {
-    var options = "";
-
-    if (err) { return callback(err); }
-    
-    self.openBoards.sort(function (a, b) { return a.name < b.name ? -1 : 1; }).forEach(function (board) {
-      options += '<option value="' + board.id + '">' + board.name + '</option>';
-    });
-    
-    $('#boardsList').html(options);
-  });
-};
-
-
 TrelloClient.prototype.getAllCurrentLists = function (boardId, cb) {
   var self = this
     , callback = cb || function() {};
@@ -142,26 +124,6 @@ TrelloClient.prototype.getAllCurrentLists = function (boardId, cb) {
     return callback(null);
   }).fail(function() {
     return callback("Unauthorized access");
-  });
-};
-
-
-TrelloClient.prototype.populateListsList = function (cb) {
-  var self = this
-    , callback = cb || function() {}
-    , selectedBoardId = $('#boardsList option:selected').val()
-    ;
-    
-  this.getAllCurrentLists(selectedBoardId, function (err) {
-    var options = "";
-
-    if (err) { return callback(err); }
-    
-    self.currentLists.sort(function (a, b) { return a.name < b.name ? -1 : 1; }).forEach(function (list) {
-      options += '<option value="' + list.id + '">' + list.name + '</option>';
-    });
-    
-    $('#listsList').html(options);  
   });
 };
 
@@ -179,6 +141,7 @@ TrelloClient.prototype.getAllCurrentCards = function (listId, cb) {
 };
 
 
+// TODO: Let user select card position
 // Callback signature: err, createdCardId
 TrelloClient.prototype.createCardOnTopOfCurrentList = function (listId, cardName, cardDesc, cb) {
   var self = this
