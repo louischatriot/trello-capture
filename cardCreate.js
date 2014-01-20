@@ -110,7 +110,6 @@ $('#cardDesc').on('keyup', validateCardDesc);
 
 $('#boardsList').on('change', function() {
   localStorage.currentBoardId = $('#boardsList option:selected').val();   // Remember this setting, user probably wants the same board all the time
-  // delete localStorage.currentListId;
   populateListsList();
 });
 
