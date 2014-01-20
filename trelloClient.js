@@ -156,11 +156,13 @@ TrelloClient.prototype.getAllCurrentCards = function (listId, cb) {
 
 // TODO: Let user select card position
 // Callback signature: err, createdCardId
-TrelloClient.prototype.createCardOnTopOfCurrentList = function (listId, cardName, cardDesc, cb) {
+TrelloClient.prototype.createCardOnTopOfCurrentList = function (listId, cardName, cardDesc, _labels, cb) {
   var self = this
-    , callback = cb || function() {};
-
-  $.ajax({ url: "https://api.trello.com/1/lists/" + listId + "/cards?key=" + this.apiKey + "&token=" + this.clientToken
+    , callback = cb || function() {}
+    , labels = _labels.length > 0 ? '&labels=' + _labels.join(',') : ''
+    ;
+    
+  $.ajax({ url: "https://api.trello.com/1/lists/" + listId + "/cards?key=" + this.apiKey + "&token=" + this.clientToken + labels
          , type: 'POST'
          , data: { name: cardName, desc: cardDesc }
          }).done(function(data) {

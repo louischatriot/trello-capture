@@ -1,0 +1,68 @@
+
+<!-- saved from url=(0067)chrome-extension://fgpbhcbjcgagjhdobnnlddonahnfbmih/cardCreate.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Trello Capture</title>
+<link href="chrome-extension://fgpbhcbjcgagjhdobnnlddonahnfbmih/lib/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="chrome-extension://fgpbhcbjcgagjhdobnnlddonahnfbmih/cardCreate.css">
+</head>
+
+<body style="">
+  <div id="left-pane">
+    <h1>Trello Capture</h1><br><br>
+
+    <div class="form-group">
+      <label>Board</label>
+      <select id="boardsList" class="form-control"><option value="5293ef0adf90b6144f00dcfb">Hackathon Ideas</option><option value="51eabb9290e68758780009af">Hardware</option><option value="524f5eab66d5ecef45000646">Installs calendar</option><option value="52060ff95b5277e334000163">Local Motion France</option><option value="523353f7a50e0d7c090007af">Machine</option><option value="52011e542faabc316e0046e2">Marketing</option><option value="526ee2d3647aa6285f000c6f">Office Idea</option><option value="52d2fce9fcb401c056b2c317">Perso</option><option value="5230b176476435e11400078c">Product Feature Pipeline</option><option value="5279b1572591d470460011c0">Software Staging (2-3 week outlook)</option><option value="51e03cb814b1ee2e2b003aad">Software weekly</option></select>
+    </div>
+
+    <div class="form-group">
+      <label>List</label>
+      <select id="listsList" class="form-control"><option value="52d2fce9fcb401c056b2c319">Doing</option><option value="52d2fce9fcb401c056b2c31a">Done</option><option value="52d2fce9fcb401c056b2c318">To Do</option></select>
+    </div>
+
+    <div class="form-group">
+      <label>Card name</label>
+      <input type="text" id="cardName" class="form-control">
+      <div class="alert alert-danger" style="margin-top: 5px; display: none;">The card name must be between 1 and 16384 characters</div>
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="cardDesc" class="form-control" rows="5"></textarea>
+      <div class="alert alert-danger" style="margin-top: 5px; display: none;">The card name must be between 0 and 16384 characters</div>
+    </div>
+    
+    <div class="form-group">
+      <label>Labels</label>
+      <div class="label-pickers">
+        <div class="yellow">Labelsdfdffdf sdf df fs 1</div>
+        <div class="green">Label sdfsdfsdfsfsf 1</div>
+        <div class="orange">Label sdfsdfsdfsfsf 1</div>
+        <div class="blue">Label sdfsdfsdfsfsf 1</div>
+        <div class="red">Label sdfsdfsdfsfsf 1</div>
+        <div class="purple">Label 1</div>
+      </div>
+    </div>
+    
+    <input type="button" value="Create card" id="createCard" class="btn btn-primary"><br><br>
+    
+    <div id="progress-bar-container">
+      <div id="progress-bar">
+      
+      </div>
+    </div>
+  </div>
+
+  <div id="screenshot-pane">
+  </div>
+
+
+
+  <script src="chrome-extension://fgpbhcbjcgagjhdobnnlddonahnfbmih/lib/jquery-2.0.3.min.js"></script>
+  <script src="chrome-extension://fgpbhcbjcgagjhdobnnlddonahnfbmih/lib/underscore-min.js"></script>
+  <script src="chrome-extension://fgpbhcbjcgagjhdobnnlddonahnfbmih/lib/bootstrap.min.js"></script>
+  <script src="chrome-extension://fgpbhcbjcgagjhdobnnlddonahnfbmih/devCreds.js"></script>
+  <script src="chrome-extension://fgpbhcbjcgagjhdobnnlddonahnfbmih/trelloClient.js"></script>
+  <script src="chrome-extension://fgpbhcbjcgagjhdobnnlddonahnfbmih/cardCreate.js"></script>
+
+</body></html>

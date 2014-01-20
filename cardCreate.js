@@ -73,6 +73,17 @@ function populateListsList(cb) {
 }
 
 
+function getSelectedLabels() {
+  var labels = [];
+  $('.label-pickers div.selected').each(function(i, d){
+    $(d).attr('class').split(' ').forEach(function (clazz) {
+      if (clazz !== 'selected') { labels.push(clazz); }
+    });
+  })
+  return labels;
+}
+
+
 // Takes as input an XMLHttpRequestProgressEvent e
 function updateUploadProgress(e) {
   var progress = Math.floor(100 * (e.position / e.totalSize));
@@ -126,7 +137,7 @@ $('#cardDesc').on('keyup', validateCardDesc);
 
 possibleLabels.forEach(function(label) {
   $('.' + label).on("click", function () {
-    $('.' + label).css('opacity', '1');
+    $('.' + label).toggleClass('selected');
   });
 });
 
@@ -149,7 +160,7 @@ $('#createCard').on('click', function () {
   
   var selectedListId = $('#listsList option:selected').val();
   
-  tc.createCardOnTopOfCurrentList(selectedListId, $('#cardName').val(), $('#cardDesc').val(), function (err, cardId) {
+  tc.createCardOnTopOfCurrentList(selectedListId, $('#cardName').val(), $('#cardDesc').val(), getSelectedLabels(), function (err, cardId) {
     $('#progress-bar-container').css('display', 'block');
     tc.attachBase64ImageToCard(cardId, currentImage, updateUploadProgress);
   });
