@@ -5,7 +5,7 @@
 var tc = new TrelloClient()
   , currentImage
   ;
-
+  
 
 function populateBoardsList(cb) {
   var callback = cb || function() {};
@@ -20,6 +20,12 @@ function populateBoardsList(cb) {
     });
     
     $('#boardsList').html(options);
+    
+    // Use remembered value if there is one
+    if (localStorage.currentBoardId) {
+      $('#boardsList option[value="' + localStorage.currentBoardId + '"]').prop('selected', true);
+    }
+    
     return callback(null);
   });
 }
@@ -40,6 +46,12 @@ function populateListsList(cb) {
     });
     
     $('#listsList').html(options);
+    
+    // Use remembered value if there is one
+    if (localStorage.currentListId) {
+      $('#listsList option[value="' + localStorage.currentListId + '"]').prop('selected', true);
+    }
+
     return callback(null);
   });
 }
@@ -47,7 +59,19 @@ function populateListsList(cb) {
 
 // Takes as input an XMLHttpRequestProgressEvent e
 function updateUploadProgress(e) {
-  $('#progress-bar').css('width', Math.floor(100 * (e.position / e.totalSize)) + '%');
+  var progress = Math.floor(100 * (e.position / e.totalSize));
+
+  $('#progress-bar').css('width', progress + '%');
+  
+  if (progress === 100) {
+    cardWasCreated();
+  }
+}
+
+
+// Give feedback to user that card was created and close page
+function cardWasCreated() {
+  console.log("This is the end");
 }
 
 
@@ -85,7 +109,13 @@ $('#cardDesc').on('keyup', validateCardDesc);
 // =================================================
 
 $('#boardsList').on('change', function() {
+  localStorage.currentBoardId = $('#boardsList option:selected').val();   // Remember this setting, user probably wants the same board all the time
+  // delete localStorage.currentListId;
   populateListsList();
+});
+
+$('#listsList').on('change', function() {
+  localStorage.currentListId = $('#listsList option:selected').val();   // Remember this setting, user probably wants the same board all the time
 });
 
 $('#createCard').on('click', function () {
