@@ -31,6 +31,20 @@ function populateBoardsList(cb) {
 }
 
 
+function populateLabelNamesList(cb) {
+  var callback = cb || function() {}
+    , selectedBoardId = $('#boardsList option:selected').val()
+    ;
+
+  tc.getAllLabelsNames(selectedBoardId, function (err) {
+    if (err) { return callback(err); }
+
+    console.log("GOT LABELS");
+    console.log(tc.currentLabels);
+  });
+}
+
+
 function populateListsList(cb) {
   var callback = cb || function() {}
     , selectedBoardId = $('#boardsList option:selected').val()
@@ -112,10 +126,8 @@ $('#boardsList').on('change', function() {
   var selectedBoardId = $('#boardsList option:selected').val();
 
   localStorage.currentBoardId = selectedBoardId;   // Remember this setting, user probably wants the same board all the time
-  
-  tc.getAllLabelsNames(selectedBoardId);
-  
   populateListsList();
+  populateLabelNamesList();
 });
 
 $('#listsList').on('change', function() {

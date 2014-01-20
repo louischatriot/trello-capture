@@ -27,3 +27,18 @@
   width: 0%;
   height: 100%;
 }
+
+.label-picker {
+  background-color: steelblue;
+  width: 45%;
+  border-radius: 4px;
+  padding: 5px;
+  display: inline-block;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+
