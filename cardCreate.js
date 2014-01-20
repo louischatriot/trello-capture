@@ -45,6 +45,12 @@ function populateListsList(cb) {
 }
 
 
+// Takes as input an XMLHttpRequestProgressEvent e
+function updateUploadProgress(e) {
+  $('#progress-bar').css('width', Math.floor(100 * (e.position / e.totalSize)) + '%');
+}
+
+
 // Validation. Quite custom but not a real issue here ...
 
 // Only validate text length. Wouldn't work if lower bound is greater than 1 of course but we're lucky here !
@@ -89,7 +95,8 @@ $('#createCard').on('click', function () {
   var selectedListId = $('#listsList option:selected').val();
   
   tc.createCardOnTopOfCurrentList(selectedListId, $('#cardName').val(), $('#cardDesc').val(), function (err, cardId) {
-    tc.attachBase64ImageToCard(cardId, currentImage);
+    $('#progress-bar-container').css('display', 'block');
+    tc.attachBase64ImageToCard(cardId, currentImage, updateUploadProgress);
   });
 });
 

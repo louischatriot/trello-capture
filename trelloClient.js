@@ -160,7 +160,7 @@ TrelloClient.prototype.createCardOnTopOfCurrentList = function (listId, cardName
 
 // Take as input a base64-encoded image (for example given by the tabs API screenshot)
 // And send attach it to a Trello card
-TrelloClient.prototype.attachBase64ImageToCard = function(cardId, imageData) {
+TrelloClient.prototype.attachBase64ImageToCard = function(cardId, imageData, progressHandler) {
   var imageDataElements = imageData.split(',')
     , mimeType = imageDataElements[0].split(':')[1].split(';')[0]
     , imageB64Data = imageDataElements[1]
@@ -170,7 +170,7 @@ TrelloClient.prototype.attachBase64ImageToCard = function(cardId, imageData) {
     , ua = new Uint8Array(ab)
     , blob, formData, request, i
     ;
-    
+
   for (i = 0; i < length; i++) {
       ua[i] = byteString.charCodeAt(i);
   }
@@ -179,9 +179,10 @@ TrelloClient.prototype.attachBase64ImageToCard = function(cardId, imageData) {
   formData = new FormData();
   formData.append("key", this.apiKey);
   formData.append("token", this.clientToken);
-  formData.append("file", blob, "screenshot.jpg");    // TODO slugify title or beginning of title
+  formData.append("file", blob, "trello-client-screenshot.jpg");    // TODO slugify title or beginning of title
   
   request = new XMLHttpRequest();
+  request.upload.addEventListener("progress", progressHandler || function () {});
   request.open("POST", "https://api.trello.com/1/cards/" + cardId + "/attachments");
   request.send(formData);
 }
