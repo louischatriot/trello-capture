@@ -4,6 +4,8 @@
 
 var tc = new TrelloClient()
   , currentImage
+  , chosenLabels = {}
+  , possibleLabels = ["red", "orange", "yellow", "purple", "blue", "green"]
   ;
   
 
@@ -121,6 +123,13 @@ $('#cardDesc').on('keyup', validateCardDesc);
 
 
 // =================================================
+
+possibleLabels.forEach(function(label) {
+  $('.' + label).on("click", function () {
+    $('.' + label).css('opacity', '1');
+  });
+});
+
 
 $('#boardsList').on('change', function() {
   var selectedBoardId = $('#boardsList option:selected').val();

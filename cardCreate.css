@@ -26,10 +26,10 @@
   background-color: steelblue;
   width: 0%;
   height: 100%;
+  transition: width 0.5s;
 }
 
-.label-picker {
-  background-color: steelblue;
+.label-pickers div {
   width: 45%;
   border-radius: 4px;
   padding: 5px;
@@ -38,7 +38,34 @@
   overflow-y: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  opacity: 0.6;
+  cursor: pointer;
 }
+
+.yellow {
+  background-color: #dbdb57;
+}
+
+.orange {
+  background-color: #e09952;
+}
+
+.red {
+  background-color: #cb4d4d;
+}
+
+.green {
+  background-color: #34b27d;
+}
+
+.blue {
+  background-color: #4d77cb;
+}
+
+.purple {
+  background-color: #93c;
+}
+
 
 
 
