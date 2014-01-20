@@ -184,4 +184,48 @@ chrome.runtime.onMessage.addListener(
 });
 
 
+var $currentRectangle
+  , currentTop
+  , currentLeft
+  ;
+
+
+$('#screenshot-pane').on('mousedown', function (evt) {
+  console.log('mousedown');
+  console.log(evt);
+  
+  $currentRectangle = $('<div class="rectangle"></div>');
+  $('#screenshot-pane').append($currentRectangle);
+  $currentRectangle.css('top', evt.clientY + 'px');
+  $currentRectangle.css('left', evt.clientX + 'px');
+  
+  currentTop = evt.clientY;
+  currentLeft = evt.clientX;
+});
+
+$('#screenshot-pane').on('mouseup', function () {
+  $currentRectangle = null;
+});
+
+$('#screenshot-pane').on('mousemove', function (evt) {
+  if (! $currentRectangle) { return; }
+
+  $currentRectangle.css('height', (evt.clientY - currentTop) + 'px');
+  $currentRectangle.css('width', (evt.clientX - currentLeft) + 'px');
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

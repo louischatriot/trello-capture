@@ -71,6 +71,10 @@
   background-color: #93c;
 }
 
+.rectangle {
+  position: fixed;
+  border: solid 2px #000;
+}
 
 
 
