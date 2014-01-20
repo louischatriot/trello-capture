@@ -14,12 +14,13 @@
 
         // Only select the current active tab, not any background tab or dev tools
         for (i = 0; i < tabs.length; i += 1) {
-          if (tabs[i].url.match(/^http/)) {
+          // TODO: more robust way to check if current tab is a page from this extension (either when I get a static extension id or with a flag)
+          if (tabs[i].url.match(/^http/) || tabs[i].url.match(/^chrome-extension.*\/cardCreate\.html$/)) {
             tab = tabs[i];
           }
         }
         
-        chrome.tabs.create({ url: createdTabUrl, index: tab.index + 1 }, onTabCreated);
+        chrome.tabs.create({ url: createdTabUrl, index: (tab.index || 0) + 1 }, onTabCreated);
       });
     });
   }
