@@ -41,8 +41,10 @@ function populateLabelNamesList(cb) {
   tc.getAllLabelsNames(selectedBoardId, function (err) {
     if (err) { return callback(err); }
 
-    console.log("GOT LABELS");
-    console.log(tc.currentLabels);
+    Object.keys(tc.currentLabels).forEach(function(color) {
+      $('.label-pickers div.' + color).html(tc.currentLabels[color] + "&nbsp;");   // Small hack ...
+    });
+    
   });
 }
 
