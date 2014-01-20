@@ -115,6 +115,19 @@ TrelloClient.prototype.getAllBoards = function (cb) {
 };
 
 
+TrelloClient.prototype.getAllLabelsNames = function(boardId, cb) {
+  var self = this
+    , callback = cb || function() {};  
+
+  $.ajax({ url: "https://api.trello.com/1/boards/" + boardId + "/labelNames?key=" + this.apiKey + "&token=" + this.clientToken }).done(function(data) {
+    self.currentLabels = data;
+    return callback(null);
+  }).fail(function() {
+    return callback("Unauthorized access");
+  });
+}
+
+
 TrelloClient.prototype.getAllCurrentLists = function (boardId, cb) {
   var self = this
     , callback = cb || function() {};

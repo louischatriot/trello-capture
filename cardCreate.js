@@ -109,12 +109,17 @@ $('#cardDesc').on('keyup', validateCardDesc);
 // =================================================
 
 $('#boardsList').on('change', function() {
-  localStorage.currentBoardId = $('#boardsList option:selected').val();   // Remember this setting, user probably wants the same board all the time
+  var selectedBoardId = $('#boardsList option:selected').val();
+
+  localStorage.currentBoardId = selectedBoardId;   // Remember this setting, user probably wants the same board all the time
+  
+  tc.getAllLabelsNames(selectedBoardId);
+  
   populateListsList();
 });
 
 $('#listsList').on('change', function() {
-  localStorage.currentListId = $('#listsList option:selected').val();   // Remember this setting, user probably wants the same board all the time
+  localStorage.currentListId = $('#listsList option:selected').val();   // Remember this setting, user probably wants the same list all the time
 });
 
 $('#createCard').on('click', function () {
