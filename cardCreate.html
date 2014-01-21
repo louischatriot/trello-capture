@@ -9,6 +9,14 @@
   <div id="left-pane">
     <h1>Trello Capture</h1><br><br>
 
+    
+    <input type="button" value="Take screenshot" id="take" class="btn btn-primary"><br><br>
+    <div style="width: 300px; height: 300px; background-repeat: no-repeat; background-size: 100% auto;" id="dascreen"></div>
+    
+    
+    
+    
+    
     <div class="form-group">
       <label>Board</label>
       <select id="boardsList" class="form-control"></select>
@@ -46,13 +54,16 @@
     <input type="button" value="Create card" id="createCard" class="btn btn-primary"><br><br>
     
     <div id="progress-bar-container">
-      <div id="progress-bar">
-      
+      <div id="progress-bar">    
       </div>
     </div>
+        
   </div>
 
   <div id="screenshot-pane">
+  
+    <canvas id="canvas" width="1000" height="550"></canvas>
+  
   </div>
 
 

@@ -6,8 +6,10 @@ var tc = new TrelloClient()
   , currentImage
   , chosenLabels = {}
   , possibleLabels = ["red", "orange", "yellow", "purple", "blue", "green"]
+  , canvas = document.getElementById('canvas')
+  , ctx = canvas.getContext('2d')
   ;
-  
+
 
 function populateBoardsList(cb) {
   var callback = cb || function() {};
@@ -179,9 +181,37 @@ populateBoardsList(function() {
 // TODO: Check how to right-size the image without changing its form too much, or accept parts of it being cut (i.e. JIRA Capture cuts the image)
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    $('#screenshot-pane').css('background-image', 'url(' + request.imageData + ')');
+    // $('#screenshot-pane').css('background-image', 'url(' + request.imageData + ')');
     currentImage = request.imageData;
+    // $('#canvas').css('background-image', 'url(' + currentImage + ')');
+
+    
+    var image = new Image();
+    image.src = currentImage;
+    image.onload = function() {
+      // var pattern = ctx.createPattern(image, "repeat");
+      
+      // console.log("---");
+      // console.log(pattern);
+      
+      // ctx.fillStyle = pattern;
+      // ctx.fill();
+
+      ctx.drawImage(image, 0, 0, 1000, 550);
+      
+      window.rect = ctx.rect(20,20,150,100);
+      ctx.stroke();
+    };
+    
 });
+
+
+$('#take').on('click', function () {
+  console.log('=====');
+  console.log(canvas.toDataURL());
+  $('#dascreen').css('background-image', 'url(' + canvas.toDataURL() + ')');
+});
+
 
 
 var $currentRectangle
