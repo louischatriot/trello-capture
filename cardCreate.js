@@ -185,8 +185,8 @@ chrome.runtime.onMessage.addListener(
 
 
 var $currentRectangle
-  , currentTop
-  , currentLeft
+  , originTop
+  , originLeft
   ;
 
 
@@ -199,8 +199,8 @@ $('#screenshot-pane').on('mousedown', function (evt) {
   $currentRectangle.css('top', evt.clientY + 'px');
   $currentRectangle.css('left', evt.clientX + 'px');
   
-  currentTop = evt.clientY;
-  currentLeft = evt.clientX;
+  originTop = evt.clientY;
+  originLeft = evt.clientX;
 });
 
 $('#screenshot-pane').on('mouseup', function () {
@@ -210,8 +210,21 @@ $('#screenshot-pane').on('mouseup', function () {
 $('#screenshot-pane').on('mousemove', function (evt) {
   if (! $currentRectangle) { return; }
 
-  $currentRectangle.css('height', (evt.clientY - currentTop) + 'px');
-  $currentRectangle.css('width', (evt.clientX - currentLeft) + 'px');
+  if (originTop <= evt.clientY) {
+    $currentRectangle.css('height', (evt.clientY - originTop) + 'px');
+    $currentRectangle.css('top', originTop + 'px');
+  } else {
+    $currentRectangle.css('height', (originTop - evt.clientY) + 'px');
+    $currentRectangle.css('top', evt.clientY + 'px');  
+  }
+  
+  if (originLeft <= evt.clientX) {
+    $currentRectangle.css('width', (evt.clientX - originLeft) + 'px');
+    $currentRectangle.css('left', originLeft + 'px');
+  } else {
+    $currentRectangle.css('width', (originLeft - evt.clientX) + 'px');
+    $currentRectangle.css('left', evt.clientX + 'px');  
+  }
 });
 
 
