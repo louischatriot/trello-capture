@@ -6,8 +6,6 @@ var tc = new TrelloClient()
   , currentImage
   , chosenLabels = {}
   , possibleLabels = ["red", "orange", "yellow", "purple", "blue", "green"]
-  , canvas = document.getElementById('canvas')
-  , ctx = canvas.getContext('2d')
   ;
 
 
@@ -177,6 +175,22 @@ populateBoardsList(function() {
 
 
 
+
+
+var canvas = document.getElementById('canvas')
+  , ctx = canvas.getContext('2d')
+  , $screenshotPane = $('#screenshot-pane')
+  , $canvas = $('#canvas')
+  , canvasW = $screenshotPane.width()
+  , canvasH = $screenshotPane.height()  
+  ;
+
+$canvas.attr('width', canvasW);
+$canvas.attr('height', canvasH);
+
+
+
+
 // When we receive an image
 // TODO: Check how to right-size the image without changing its form too much, or accept parts of it being cut (i.e. JIRA Capture cuts the image)
 chrome.runtime.onMessage.addListener(
@@ -197,7 +211,7 @@ chrome.runtime.onMessage.addListener(
       // ctx.fillStyle = pattern;
       // ctx.fill();
 
-      ctx.drawImage(image, 0, 0, 1000, 550);
+      ctx.drawImage(image, 0, 0, canvasW, canvasH);
       
       window.rect = ctx.rect(20,20,150,100);
       ctx.stroke();
