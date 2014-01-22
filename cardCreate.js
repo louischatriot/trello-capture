@@ -164,6 +164,7 @@ $('#createCard').on('click', function () {
   
   tc.createCardOnTopOfCurrentList(selectedListId, $('#cardName').val(), $('#cardDesc').val(), getSelectedLabels(), function (err, cardId) {
     $('#progress-bar-container').css('display', 'block');
+    currentImage = canvas.toDataURL("image/jpeg");
     tc.attachBase64ImageToCard(cardId, currentImage, updateUploadProgress);
   });
 });
@@ -182,7 +183,7 @@ var canvas = document.getElementById('canvas')
   , $screenshotPane = $('#screenshot-pane')
   , $canvas = $('#canvas')
   , canvasW = $screenshotPane.width()
-  , canvasH = $screenshotPane.height()  
+  , canvasH = $screenshotPane.height() * 0.8
   ;
 
 $canvas.attr('width', canvasW);
@@ -203,16 +204,10 @@ chrome.runtime.onMessage.addListener(
     var image = new Image();
     image.src = currentImage;
     image.onload = function() {
-      // TODO: Calculate non-scaling coordinates
+      // TODO: Calculate non-scaling coordinates better than that
       ctx.drawImage(image, 0, 0, canvasW, canvasH);
     };
     
-});
-
-
-$('#take').on('click', function () {
-  currentImage = canvas.toDataURL();
-  $('#dascreen').css('background-image', 'url(' + currentImage + ')');
 });
 
 

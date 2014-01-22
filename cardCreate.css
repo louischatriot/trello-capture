@@ -13,6 +13,7 @@
   height: 100%;
   float: right;
   position: relative;
+  cursor: crosshair;
 }
 
 #progress-bar-container {
@@ -73,7 +74,7 @@
 
 .rectangle {
   position: fixed;
-  border: solid 2px #000;
+  border: solid 6px #000;
 }
 
 #screenshot-pane canvas {
