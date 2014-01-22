@@ -211,9 +211,8 @@ chrome.runtime.onMessage.addListener(
 
 
 $('#take').on('click', function () {
-  console.log('=====');
-  console.log(canvas.toDataURL());
-  $('#dascreen').css('background-image', 'url(' + canvas.toDataURL() + ')');
+  currentImage = canvas.toDataURL();
+  $('#dascreen').css('background-image', 'url(' + currentImage + ')');
 });
 
 
