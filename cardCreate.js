@@ -203,18 +203,8 @@ chrome.runtime.onMessage.addListener(
     var image = new Image();
     image.src = currentImage;
     image.onload = function() {
-      // var pattern = ctx.createPattern(image, "repeat");
-      
-      // console.log("---");
-      // console.log(pattern);
-      
-      // ctx.fillStyle = pattern;
-      // ctx.fill();
-
+      // TODO: Calculate non-scaling coordinates
       ctx.drawImage(image, 0, 0, canvasW, canvasH);
-      
-      window.rect = ctx.rect(20,20,150,100);
-      ctx.stroke();
     };
     
 });
@@ -248,6 +238,17 @@ $('#screenshot-pane').on('mousedown', function (evt) {
 });
 
 $('#screenshot-pane').on('mouseup', function () {
+  var left = parseInt($currentRectangle.css('left').replace(/px/, ""), 10) - (canvasW / 4)   // TODO: mode robust way to do this of course
+    , top = parseInt($currentRectangle.css('top').replace(/px/, ""), 10)
+    , width = parseInt($currentRectangle.css('width').replace(/px/, ""), 10)
+    , height = parseInt($currentRectangle.css('height').replace(/px/, ""), 10)
+    ;
+  
+  ctx.setLineWidth(6);
+  ctx.rect(left, top, width, height);
+  ctx.stroke();
+
+  $currentRectangle.css('display', 'none');
   $currentRectangle = null;
 });
 
