@@ -1,3 +1,8 @@
+/*
+ * TODO: Better error management, we should be able to tell the client exactly what went wrong insteal of
+ * vague messages such as "unauthorized access" or "strange error"
+ */
+
 function TrelloClient () {
   this.apiKey = null;
   this.apiSecret = null;
@@ -170,6 +175,27 @@ TrelloClient.prototype.createCardOnTopOfCurrentList = function (listId, cardName
   }).fail(function() {
     return callback("Unauthorized access");
   });
+};
+
+
+// TODO: a bit scrappy since it is dependent on the title Trello sends us. A better way would be to use the url or an API call
+// Callback signature: err, boolean indicating whether login was successful or not
+TrelloClient.prototype.logUserIn = function(email, password, cb) {
+  var self = this
+    , callback = cb || function() {};
+    
+  $.ajax({ url: "https://trello.com/authenticate"
+         , type: 'POST'
+         , data: { user: email, password: password, returnUrl: '/' }
+         }).done(function(data, textStatus, jqXHR) {
+           if (jqXHR.responseText.match(/<title>Log In[^<]*<\/title>/)) {   // Trello still wants us to login, so login was not successful
+             return callback(null, false);
+           } else {           
+             return callback(null, true);
+           }
+         }).fail(function(jqXHR) {
+           return callback("Strange error");
+         });
 };
 
 

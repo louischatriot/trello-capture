@@ -80,3 +80,27 @@
 #screenshot-pane canvas {
 }
 
+#login {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+#login-box {
+  width: 350px;
+  background-color: #fff;
+  opacity: 1;
+  margin: 0 auto;
+  margin-top: 300px;
+  padding: 20px;
+  border: solid 1px #000;
+}
+
+#login-box input {
+  width: 300px;
+}
+
+

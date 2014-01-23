@@ -178,6 +178,29 @@ populateBoardsList(function() {
 
 
 
+function tryToLogIn() {
+  console.log("TRYING TO LOG IN");
+
+  tc.logUserIn($('#login-email').val(), $('#login-password').val(), function (err, loggedIn) {
+    console.log("RESUlT");
+    console.log(loggedIn);
+  });
+}
+
+
+$('#login-button').on('click', tryToLogIn);
+$('#login-box').on('keypress', function(evt) {
+  if (evt.keyCode === 13) { tryToLogIn(); }
+});
+
+
+
+
+
+/*
+ * Image management
+ */
+
 var canvas = document.getElementById('canvas')
   , ctx = canvas.getContext('2d')
   , $screenshotPane = $('#screenshot-pane')
@@ -188,8 +211,6 @@ var canvas = document.getElementById('canvas')
 
 $canvas.attr('width', canvasW);
 $canvas.attr('height', canvasH);
-
-
 
 
 // When we receive an image
