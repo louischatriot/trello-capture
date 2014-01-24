@@ -91,16 +91,13 @@ function updateUploadProgress(e) {
   var progress = Math.floor(100 * (e.position / e.totalSize));
 
   $('#progress-bar').css('width', progress + '%');
-  
-  if (progress === 100) {
-    cardWasCreated();
-  }
 }
 
 
 // Give feedback to user that card was created and close page
 function cardWasCreated() {
-  console.log("This is the end");
+  console.log("Card is created, closing window");
+  window.close();
 }
 
 
@@ -165,7 +162,7 @@ $('#createCard').on('click', function () {
   tc.createCardOnTopOfCurrentList(selectedListId, $('#cardName').val(), $('#cardDesc').val(), getSelectedLabels(), function (err, cardId) {
     $('#progress-bar-container').css('display', 'block');
     ms.persistCurrentScreenshot();
-    tc.attachBase64ImageToCard(cardId, ms.currentBase64Image, updateUploadProgress);
+    tc.attachBase64ImageToCard(cardId, ms.currentBase64Image, updateUploadProgress, cardWasCreated);
   });
 });
 

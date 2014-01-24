@@ -9,12 +9,6 @@ function TrelloClient () {
   this.clientToken = null;   // Required to see non public boards
   this.username = null;
   
-  // Only used for dev
-  // this.apiKey = window.creds.apiKey;
-  // this.apiSecret = window.creds.apiSecret;
-  // this.clientToken = window.creds.clientToken;
-  // this.username = window.creds.username;
-  
   this.openBoards = [];
   this.currentLists = [];
   this.currentCards = [];
@@ -201,7 +195,7 @@ TrelloClient.prototype.logUserIn = function(email, password, cb) {
 
 // Take as input a base64-encoded image (for example given by the tabs API screenshot)
 // And send attach it to a Trello card
-TrelloClient.prototype.attachBase64ImageToCard = function(cardId, imageData, progressHandler) {
+TrelloClient.prototype.attachBase64ImageToCard = function(cardId, imageData, progressHandler, endHandler) {
   var imageDataElements = imageData.split(',')
     , mimeType = imageDataElements[0].split(':')[1].split(';')[0]
     , imageB64Data = imageDataElements[1]
@@ -224,6 +218,7 @@ TrelloClient.prototype.attachBase64ImageToCard = function(cardId, imageData, pro
   
   request = new XMLHttpRequest();
   request.upload.addEventListener("progress", progressHandler || function () {});
+  request.onload = endHandler || function () {};
   request.open("POST", "https://api.trello.com/1/cards/" + cardId + "/attachments");
   request.send(formData);
 }
