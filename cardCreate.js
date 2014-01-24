@@ -91,6 +91,12 @@ function updateUploadProgress(e) {
   var progress = Math.floor(100 * (e.position / e.totalSize));
 
   $('#progress-bar').css('width', progress + '%');
+  
+  if (progress === 100) {
+    setTimeout(function () {
+      $('#cardWasCreated').css('display', 'block');
+    }, 700);
+  }
 }
 
 
