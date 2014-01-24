@@ -3,7 +3,7 @@
  */
 
 var tc = new TrelloClient()
-  , currentImage
+  , ms = new ModifiedScreenshot()
   , chosenLabels = {}
   , possibleLabels = ["red", "orange", "yellow", "purple", "blue", "green"]
   ;
@@ -157,15 +157,15 @@ $('#listsList').on('change', function() {
 });
 
 $('#createCard').on('click', function () {
-  if (!currentImage) { return; }
+  if (!ms.currentBase64Image) { return; }
   if (!validateCardName() || !validateCardDesc()) { return; }
   
   var selectedListId = $('#listsList option:selected').val();
   
   tc.createCardOnTopOfCurrentList(selectedListId, $('#cardName').val(), $('#cardDesc').val(), getSelectedLabels(), function (err, cardId) {
     $('#progress-bar-container').css('display', 'block');
-    currentImage = canvas.toDataURL("image/jpeg");
-    tc.attachBase64ImageToCard(cardId, currentImage, updateUploadProgress);
+    ms.persistCurrentScreenshot();
+    tc.attachBase64ImageToCard(cardId, ms.currentBase64Image, updateUploadProgress);
   });
 });
 
@@ -197,108 +197,9 @@ $('#login-box').on('keypress', function(evt) {
 
 
 
-/*
- * Image management
- */
-
-var canvas = document.getElementById('canvas')
-  , ctx = canvas.getContext('2d')
-  , $screenshotPane = $('#screenshot-pane')
-  , $canvas = $('#canvas')
-  , canvasW = $screenshotPane.width()
-  , canvasH = $screenshotPane.height() * 0.8
-  ;
-
-$canvas.attr('width', canvasW);
-$canvas.attr('height', canvasH);
 
 
 // When we receive an image
-// TODO: Check how to right-size the image without changing its form too much, or accept parts of it being cut (i.e. JIRA Capture cuts the image)
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    // $('#screenshot-pane').css('background-image', 'url(' + request.imageData + ')');
-    currentImage = request.imageData;
-    // $('#canvas').css('background-image', 'url(' + currentImage + ')');
-
-    
-    var image = new Image();
-    image.src = currentImage;
-    image.onload = function() {
-      // TODO: Calculate non-scaling coordinates better than that
-      ctx.drawImage(image, 0, 0, canvasW, canvasH);
-    };
-    
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  ms.setAsBackground(request.imageData);
 });
-
-
-
-var $currentRectangle
-  , originTop
-  , originLeft
-  ;
-
-
-$('#screenshot-pane').on('mousedown', function (evt) {
-  console.log('mousedown');
-  console.log(evt);
-  
-  $currentRectangle = $('<div class="rectangle"></div>');
-  $('#screenshot-pane').append($currentRectangle);
-  $currentRectangle.css('top', evt.clientY + 'px');
-  $currentRectangle.css('left', evt.clientX + 'px');
-  
-  originTop = evt.clientY;
-  originLeft = evt.clientX;
-});
-
-$('#screenshot-pane').on('mouseup', function () {
-  var left = parseInt($currentRectangle.css('left').replace(/px/, ""), 10) - (canvasW / 4)   // TODO: mode robust way to do this of course
-    , top = parseInt($currentRectangle.css('top').replace(/px/, ""), 10)
-    , width = parseInt($currentRectangle.css('width').replace(/px/, ""), 10)
-    , height = parseInt($currentRectangle.css('height').replace(/px/, ""), 10)
-    ;
-  
-  ctx.setLineWidth(6);
-  ctx.rect(left, top, width, height);
-  ctx.stroke();
-
-  $currentRectangle.css('display', 'none');
-  $currentRectangle = null;
-});
-
-$('#screenshot-pane').on('mousemove', function (evt) {
-  if (! $currentRectangle) { return; }
-
-  if (originTop <= evt.clientY) {
-    $currentRectangle.css('height', (evt.clientY - originTop) + 'px');
-    $currentRectangle.css('top', originTop + 'px');
-  } else {
-    $currentRectangle.css('height', (originTop - evt.clientY) + 'px');
-    $currentRectangle.css('top', evt.clientY + 'px');  
-  }
-  
-  if (originLeft <= evt.clientX) {
-    $currentRectangle.css('width', (evt.clientX - originLeft) + 'px');
-    $currentRectangle.css('left', originLeft + 'px');
-  } else {
-    $currentRectangle.css('width', (originLeft - evt.clientX) + 'px');
-    $currentRectangle.css('left', evt.clientX + 'px');  
-  }
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
