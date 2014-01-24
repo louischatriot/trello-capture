@@ -170,20 +170,48 @@ $('#createCard').on('click', function () {
 });
 
 // Initialization
-populateBoardsList(function() {
-  $('#boardsList').trigger('change');
+function initializeBoardsAndLists() {
+  populateBoardsList(function() {
+    $('#boardsList').trigger('change');
+  });
+}
+
+
+
+// ============================
+// Entry point
+// ============================
+
+tc.getLoggedUsername(function (err) {
+  if (tc.username) {
+    getTrelloCredentialsAndInitialize();
+  } else {
+    $('#login').css('display', 'block');
+  }
 });
 
+// Makes the assumption the user is logged in to Trello
+function getTrelloCredentialsAndInitialize (cb) {
+  var callback = cb || function () {};
 
-
-
+  tc.getLoggedUsername(function (err) {
+    tc.getApiCredentials(function (err) {
+      tc.getClientToken(function (err) {
+        initializeBoardsAndLists();
+      });
+    });
+  });
+}
 
 function tryToLogIn() {
-  console.log("TRYING TO LOG IN");
-
+  $('#login div.alert-danger').css('display', 'none');
   tc.logUserIn($('#login-email').val(), $('#login-password').val(), function (err, loggedIn) {
-    console.log("RESUlT");
-    console.log(loggedIn);
+    if (loggedIn) {
+      $('#login').css('display', 'none');
+      getTrelloCredentialsAndInitialize();
+    } else {
+      $('#login div.alert-danger').css('display', 'block');
+    }
   });
 }
 

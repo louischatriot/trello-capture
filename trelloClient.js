@@ -9,10 +9,11 @@ function TrelloClient () {
   this.clientToken = null;   // Required to see non public boards
   this.username = null;
   
-  this.apiKey = window.creds.apiKey;
-  this.apiSecret = window.creds.apiSecret;
-  this.clientToken = window.creds.clientToken;
-  this.username = window.creds.username;
+  // Only used for dev
+  // this.apiKey = window.creds.apiKey;
+  // this.apiSecret = window.creds.apiSecret;
+  // this.clientToken = window.creds.clientToken;
+  // this.username = window.creds.username;
   
   this.openBoards = [];
   this.currentLists = [];
@@ -96,7 +97,6 @@ TrelloClient.prototype.getClientToken = function(cb) {
 TrelloClient.prototype.getLoggedUsername = function (cb) {
   var self = this
     , callback = cb || function() {};
-
   
   $.ajax({ url: "https://trello.com/1/Members/me" }).done(function (data) {
     self.username = data.username;
