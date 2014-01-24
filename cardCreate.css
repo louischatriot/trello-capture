@@ -74,7 +74,7 @@
 
 .rectangle {
   position: fixed;
-  border: solid 6px #000;
+  border: solid 6px #ffaa00;
 }
 
 #screenshot-pane canvas {

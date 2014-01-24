@@ -49,6 +49,10 @@ ModifiedScreenshot.prototype.switchToRectangleDrawingMode = function () {
     
     self.ctx.setLineWidth(6);
     self.ctx.rect(left, top, width, height);
+    self.ctx.strokeStyle = '#ffaa00';
+    self.ctx.shadowColor = '#666666';
+    self.ctx.shadowOffsetX = 1;
+    self.ctx.shadowOffsetY = 1;
     self.ctx.stroke();
 
     self.$currentRectangle.css('display', 'none');
