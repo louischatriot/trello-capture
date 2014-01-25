@@ -1,5 +1,5 @@
 #left-pane {
-  background-color: #bbb;
+  background-color: #eee;
   width: 20%;
   height: 100%;
   float: left;
@@ -14,6 +14,7 @@
   float: right;
   position: relative;
   cursor: crosshair;
+  background-color: #eee;
 }
 
 #progress-bar-container {

@@ -16,6 +16,8 @@ function ModifiedScreenshot () {
   
   $('#canvas').attr('width', this.canvasW);
   $('#canvas').attr('height', this.canvasH);
+  // $('#canvas').css('position', 'relative');
+  // $('#canvas').css('top', (100 * (1 - this.scale)) + '%');  
   
   // State of the currently drawn rectangle
   this.$currentRectangle = null;
@@ -61,21 +63,25 @@ ModifiedScreenshot.prototype.switchToRectangleDrawingMode = function () {
 
   this.$screenshotPane.on('mousemove', function (evt) {
     if (! self.$currentRectangle) { return; }
+    
+    var currentX = evt.clientX
+      , currentY = Math.min(evt.clientY, self.canvasH - 3)
+      ;
 
-    if (self.originTop <= evt.clientY) {
-      self.$currentRectangle.css('height', (evt.clientY - self.originTop) + 'px');
+    if (self.originTop <= currentY) {
+      self.$currentRectangle.css('height', (currentY - self.originTop) + 'px');
       self.$currentRectangle.css('top', self.originTop + 'px');
     } else {
-      self.$currentRectangle.css('height', (self.originTop - evt.clientY) + 'px');
-      self.$currentRectangle.css('top', evt.clientY + 'px');  
+      self.$currentRectangle.css('height', (self.originTop - currentY) + 'px');
+      self.$currentRectangle.css('top', currentY + 'px');  
     }
     
-    if (self.originLeft <= evt.clientX) {
-      self.$currentRectangle.css('width', (evt.clientX - self.originLeft) + 'px');
+    if (self.originLeft <= currentX) {
+      self.$currentRectangle.css('width', (currentX - self.originLeft) + 'px');
       self.$currentRectangle.css('left', self.originLeft + 'px');
     } else {
-      self.$currentRectangle.css('width', (self.originLeft - evt.clientX) + 'px');
-      self.$currentRectangle.css('left', evt.clientX + 'px');  
+      self.$currentRectangle.css('width', (self.originLeft - currentX) + 'px');
+      self.$currentRectangle.css('left', currentX + 'px');  
     }
   });
 };
