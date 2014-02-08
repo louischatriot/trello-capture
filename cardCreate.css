@@ -16,7 +16,6 @@
   right: 0;
 }
 
-
 #screenshot-pane {
   position: fixed;
   right: 0;
@@ -86,9 +85,6 @@
   border: solid 6px #ffaa00;
 }
 
-#screenshot-pane canvas {
-}
-
 #login {
   position: fixed;
   top: 0;
@@ -111,5 +107,3 @@
 #login-box input {
   width: 300px;
 }
-
-

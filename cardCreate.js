@@ -3,7 +3,6 @@
  */
 
 var tc = new TrelloClient()
-  , ms = new ModifiedScreenshot()
   , chosenLabels = {}
   , possibleLabels = ["red", "orange", "yellow", "purple", "blue", "green"]
   , $leftPane = $('#left-pane')
@@ -143,7 +142,7 @@ $('#cardDesc').on('keyup', validateCardDesc);
 // Initialization
 // =================================================
 
-// Panes sizes and left pane behaviour
+// Panes sizes and left pane behaviour, plus canvas
 var totalHeight = $('body').height()
   , totalWidth = $('body').width()
   , topPaneHeight = 50
@@ -169,6 +168,8 @@ $leftPane.on('mouseover', function() {
 $leftPane.on('mouseout', function() {
   $leftPane.css('left', baseLeftPanePosition + 'px');
 })
+
+var ms = new ModifiedScreenshot();
 
 
 

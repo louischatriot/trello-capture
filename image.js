@@ -10,9 +10,9 @@ function ModifiedScreenshot () {
   this.currentBase64Image = null;
   
   // Set canvas size
-  this.scale = 0.8;
   this.canvasW = this.$screenshotPane.width();
-  this.canvasH = this.$screenshotPane.height() * this.scale;
+  this.canvasH = this.$screenshotPane.height();
+  this.scale = this.canvasW / $('body').width();
   
   $('#canvas').attr('width', this.canvasW);
   $('#canvas').attr('height', this.canvasH);
@@ -23,6 +23,8 @@ function ModifiedScreenshot () {
   this.$currentRectangle = null;
   this.originTop = null;
   this.originLeft = null;
+  
+  window.iii = this;
 }
  
 
@@ -43,8 +45,8 @@ ModifiedScreenshot.prototype.switchToRectangleDrawingMode = function () {
   });
 
   this.$screenshotPane.on('mouseup', function () {
-    var left = parseInt(self.$currentRectangle.css('left').replace(/px/, ""), 10) - (self.canvasW * (1 - self.scale) / self.scale)   // TODO: mode robust way to do this of course
-      , top = parseInt(self.$currentRectangle.css('top').replace(/px/, ""), 10)
+    var left = parseInt(self.$currentRectangle.css('left').replace(/px/, ""), 10) - (self.canvasW * (1 - self.scale) / self.scale)
+      , top = parseInt(self.$currentRectangle.css('top').replace(/px/, ""), 10) - (self.canvasH * (1 - self.scale) / self.scale)
       , width = parseInt(self.$currentRectangle.css('width').replace(/px/, ""), 10)
       , height = parseInt(self.$currentRectangle.css('height').replace(/px/, ""), 10)
       ;
