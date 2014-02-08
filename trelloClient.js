@@ -214,7 +214,7 @@ TrelloClient.prototype.attachBase64ImageToCard = function(cardId, imageData, pro
   formData = new FormData();
   formData.append("key", this.apiKey);
   formData.append("token", this.clientToken);
-  formData.append("file", blob, "trello-client-screenshot.jpg");    // TODO slugify title or beginning of title
+  formData.append("file", blob, "trello-capture-screenshot.jpg");    // TODO slugify title or beginning of title
   
   request = new XMLHttpRequest();
   request.upload.addEventListener("progress", progressHandler || function () {});

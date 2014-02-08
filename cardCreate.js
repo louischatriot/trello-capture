@@ -6,6 +6,7 @@ var tc = new TrelloClient()
   , ms = new ModifiedScreenshot()
   , chosenLabels = {}
   , possibleLabels = ["red", "orange", "yellow", "purple", "blue", "green"]
+  , $leftPane = $('#left-pane')
   ;
 
 
@@ -139,6 +140,37 @@ $('#cardDesc').on('keyup', validateCardDesc);
 
 
 // =================================================
+// Initialization
+// =================================================
+
+// Panes sizes and left pane behaviour
+var totalHeight = $('body').height()
+  , totalWidth = $('body').width()
+  , topPaneHeight = 50
+  , screenshotPaneHeight = totalHeight - topPaneHeight
+  , rightPanesWidth = Math.floor(totalWidth * screenshotPaneHeight / totalHeight)
+  , leftPaneWidth = Math.floor(0.2 * totalWidth)
+  , baseLeftPanePosition = Math.max(totalWidth - rightPanesWidth - leftPaneWidth, 20 - leftPaneWidth)
+  ;
+
+$('#top-pane').css('width', rightPanesWidth + 'px');
+$('#top-pane').css('height', topPaneHeight + 'px');
+
+$('#screenshot-pane').css('width', rightPanesWidth + 'px');
+$('#screenshot-pane').css('height', screenshotPaneHeight + 'px');
+
+$leftPane.css('width', leftPaneWidth + 'px');
+$leftPane.css('left', baseLeftPanePosition + 'px');
+
+$leftPane.on('mouseover', function() {
+  $leftPane.css('left', '0');
+})
+
+$leftPane.on('mouseout', function() {
+  $leftPane.css('left', baseLeftPanePosition + 'px');
+})
+
+
 
 possibleLabels.forEach(function(label) {
   $('.' + label).on("click", function () {

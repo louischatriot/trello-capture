@@ -5,7 +5,19 @@
 <link rel="stylesheet" type="text/css" href="cardCreate.css">
 </head>
 
-<body>
+<body>  
+  <!-- Top control pane -->
+  <div id="top-pane">
+  </div>
+  
+  
+  <!-- Screenshot pane -->
+  <div id="screenshot-pane">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  
+  <!-- Left overlay control pane -->  
   <div id="left-pane">
     <h1>Trello Capture</h1><br><br>
 
@@ -52,12 +64,8 @@
     <div class="alert alert-success" id="cardWasCreated" style="display: none; margin-top: 10px;">Card and screenshot created, closing window ...</div>
         
   </div>
+  
 
-  <div id="screenshot-pane">
-    <canvas id="canvas"></canvas>
-  </div>
-  
-  
   <div id="login" style="display: none;">
     <div id="login-box">
   

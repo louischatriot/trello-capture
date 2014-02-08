@@ -1,20 +1,28 @@
 #left-pane {
   background-color: #eee;
-  width: 20%;
   height: 100%;
-  float: left;
+  position: fixed;
+  top: 0;
   padding: 20px;
   box-sizing: border-box;
   border-right: solid 1px black;
+  transition: left 0.5s;
 }
 
+#top-pane {
+  background-color: red;
+  position: fixed;
+  top: 0;
+  right: 0;
+}
+
+
 #screenshot-pane {
-  width: 80%;
-  height: 100%;
-  float: right;
-  position: relative;
+  position: fixed;
+  right: 0;
+  bottom: 0;
   cursor: crosshair;
-  background-color: #eee;
+  background-color: green;
 }
 
 #progress-bar-container {
