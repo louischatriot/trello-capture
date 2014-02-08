@@ -52,13 +52,10 @@
   overflow-y: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  opacity: 0.6;
   cursor: pointer;
   -webkit-user-select: none;
-}
-
-.label-pickers div.selected {
-  opacity: 1;
+  color: #fff;
+  text-shadow: 0 1px rgba(0,0,0,0.4),0 0 3px #000;
 }
 
 .yellow {

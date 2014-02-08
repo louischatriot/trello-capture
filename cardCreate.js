@@ -9,6 +9,15 @@ var tc = new TrelloClient()
   ;
 
 
+// Change a color's opacity, given that _oldColor is passed as rgb() or rgba() as is the case in jQuery
+function changeOpacity(_oldColor, opacity) {
+  var oldColor = _oldColor.split(',')
+    , newColor = 'rgba(';
+    
+  newColor += oldColor[0].split('(')[1] + ',' + oldColor[1] + ',' + oldColor[2].split(')')[0] + ',' + (opacity || 1) + ')';  
+  return newColor;
+}
+  
 function populateBoardsList(cb) {
   var callback = cb || function() {};
   
@@ -175,10 +184,20 @@ $leftPane.on('mouseout', function() {
 var ms = new ModifiedScreenshot();
 
 
-
+// Manage background-color behavior on click
 possibleLabels.forEach(function(label) {
-  $('.' + label).on("click", function () {
-    $('.' + label).toggleClass('selected');
+  var $label = $('.' + label);
+  
+  // Initial state
+  $label.css('background-color', changeOpacity($label.css('background-color'), 0.3));
+
+  $label.on("click", function () {
+    $label.toggleClass('selected');
+    if ($label.hasClass('selected')) {
+      $label.css('background-color', changeOpacity($label.css('background-color'), 1));
+    } else {
+      $label.css('background-color', changeOpacity($label.css('background-color'), 0.5));    
+    }
   });
 });
 
