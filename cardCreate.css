@@ -3,6 +3,7 @@
   height: 100%;
   position: fixed;
   top: 0;
+  left: 0;
   padding: 20px;
   box-sizing: border-box;
   border-right: solid 1px black;

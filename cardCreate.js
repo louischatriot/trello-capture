@@ -158,8 +158,11 @@ $('#top-pane').css('height', topPaneHeight + 'px');
 $('#screenshot-pane').css('width', rightPanesWidth + 'px');
 $('#screenshot-pane').css('height', screenshotPaneHeight + 'px');
 
+// Show left pane until screenshot appears, then slide it to the left
 $leftPane.css('width', leftPaneWidth + 'px');
-$leftPane.css('left', baseLeftPanePosition + 'px');
+$('body').on('trelloCapture.screenshotTaken', function () {
+  $leftPane.css('left', baseLeftPanePosition + 'px');
+});
 
 $leftPane.on('mouseover', function() {
   $leftPane.css('left', '0');

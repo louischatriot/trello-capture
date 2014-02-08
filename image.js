@@ -104,6 +104,7 @@ ModifiedScreenshot.prototype.setAsBackground = function (base64Image) {
     // TODO: Calculate non-scaling coordinates better than that
     self.ctx.drawImage(image, 0, 0, self.canvasW, self.canvasH);
     self.switchToRectangleDrawingMode();
+    $('body').trigger('trelloCapture.screenshotTaken');
   };
 };
 
