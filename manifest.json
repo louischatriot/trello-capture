@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Trello Capture",
   "description": "Take a screenshot and put it in a Trello card in seconds",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "permissions": [
     "tabs",
     "*://*/*"

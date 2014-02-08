@@ -55,9 +55,8 @@
   cursor: pointer;
   -webkit-user-select: none;
   color: #fff;
-  text-shadow: 2px 2px 1px #000, -2px 2px 1px #000, 2px -2px 1px #000, -2px -2px 1px #000;
+  text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, 1px -1px 1px #000, -1px -1px 1px #000;
   font-weight: bold;
-  font-size: 16px;
 }
 
 .yellow {
