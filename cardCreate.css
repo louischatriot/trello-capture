@@ -7,13 +7,17 @@
   box-sizing: border-box;
   border-right: solid 1px black;
   transition: left 0.5s;
+  box-shadow: 2px 0px 5px #000;
 }
 
 #top-pane {
-  background-color: red;
+  background-color: #eee;
+  box-sizing: border-box;
+  border-bottom: solid 1px black;
   position: fixed;
   top: 0;
   right: 0;
+  box-shadow: 0px 2px 5px #000;
 }
 
 #screenshot-pane {
@@ -21,7 +25,7 @@
   right: 0;
   bottom: 0;
   cursor: crosshair;
-  background-color: green;
+  background-color: #fff;
 }
 
 #progress-bar-container {
