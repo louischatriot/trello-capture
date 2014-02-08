@@ -189,14 +189,14 @@ possibleLabels.forEach(function(label) {
   var $label = $('.' + label);
   
   // Initial state
-  $label.css('background-color', changeOpacity($label.css('background-color'), 0.3));
+  $label.css('background-color', changeOpacity($label.css('background-color'), 0.35));
 
   $label.on("click", function () {
     $label.toggleClass('selected');
     if ($label.hasClass('selected')) {
       $label.css('background-color', changeOpacity($label.css('background-color'), 1));
     } else {
-      $label.css('background-color', changeOpacity($label.css('background-color'), 0.5));    
+      $label.css('background-color', changeOpacity($label.css('background-color'), 0.35));    
     }
   });
 });
