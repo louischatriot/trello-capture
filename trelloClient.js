@@ -153,9 +153,8 @@ TrelloClient.prototype.getAllCurrentCards = function (listId, cb) {
 };
 
 
-// TODO: Let user select card position
 // Callback signature: err, createdCardId
-TrelloClient.prototype.createCardOnTopOfCurrentList = function (listId, cardName, cardDesc, _labels, cb) {
+TrelloClient.prototype.createCardAtBottomOfCurrentList = function (listId, cardName, cardDesc, _labels, cb) {
   var self = this
     , callback = cb || function() {}
     , labels = _labels.length > 0 ? '&labels=' + _labels.join(',') : ''
@@ -163,7 +162,24 @@ TrelloClient.prototype.createCardOnTopOfCurrentList = function (listId, cardName
     
   $.ajax({ url: "https://api.trello.com/1/lists/" + listId + "/cards?key=" + this.apiKey + "&token=" + this.clientToken + labels
          , type: 'POST'
-         , data: { name: cardName, desc: cardDesc }
+         , data: { name: cardName, desc: cardDesc, pos: 'top' }
+         }).done(function(data) {
+    return callback(null, data.id);
+  }).fail(function() {
+    return callback("Unauthorized access");
+  });
+};
+
+
+// Callback signature: err, createdCardId
+TrelloClient.prototype.putCardOnTopOfList = function (cardId, cb) {
+  var self = this
+    , callback = cb || function() {}
+    ;
+    
+  $.ajax({ url: "https://api.trello.com/1/cards/" + cardId + "?key=" + this.apiKey + "&token=" + this.clientToken
+         , type: 'PUT'
+         , data: { pos: 'top' }
          }).done(function(data) {
     return callback(null, data.id);
   }).fail(function() {

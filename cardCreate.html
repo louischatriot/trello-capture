@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>Trello Capture</title>
-<link href="lib/bootstrap.min.css" rel="stylesheet">
+<link href="lib/bootstrap.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="cardCreate.css">
 </head>
 
@@ -41,6 +41,12 @@
       <label>Description</label>
       <textarea id="cardDesc" class="form-control" rows="5"></textarea>
       <div class="alert alert-danger" style="margin-top: 5px; display: none;">The card name must be between 0 and 16384 characters</div>
+    </div>
+    
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" id="on-top"> Create on top of list
+      </label>
     </div>
     
     <div class="form-group">

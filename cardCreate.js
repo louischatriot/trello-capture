@@ -184,7 +184,7 @@ $leftPane.on('mouseout', function() {
 var ms = new ModifiedScreenshot();
 
 
-// Manage background-color behavior on click
+// Manage background-color behavior on click for labels
 possibleLabels.forEach(function(label) {
   var $label = $('.' + label);
   
@@ -214,16 +214,30 @@ $('#listsList').on('change', function() {
   localStorage.currentListId = $('#listsList option:selected').val();   // Remember this setting, user probably wants the same list all the time
 });
 
+$('#on-top').on('change', function () {
+  localStorage.cardOnTop = $('#on-top').prop('checked');
+});
+
 $('#createCard').on('click', function () {
   if (!ms.currentBase64Image) { return; }
   if (!validateCardName() || !validateCardDesc()) { return; }
   
   var selectedListId = $('#listsList option:selected').val();
   
-  tc.createCardOnTopOfCurrentList(selectedListId, $('#cardName').val(), $('#cardDesc').val(), getSelectedLabels(), function (err, cardId) {
-    $('#progress-bar-container').css('display', 'block');
-    ms.persistCurrentScreenshot();
-    tc.attachBase64ImageToCard(cardId, ms.currentBase64Image, updateUploadProgress, cardWasCreated);
+  // Create card
+  tc.createCardAtBottomOfCurrentList(selectedListId, $('#cardName').val(), $('#cardDesc').val(), getSelectedLabels(), function (err, cardId) {
+    // Put it on top if needed, then attach screenshot (code is not DRY but we can live with it if it's only in this place)
+    if ($('#on-top').prop('checked')) {
+      tc.putCardOnTopOfList(cardId, function () {    
+        $('#progress-bar-container').css('display', 'block');
+        ms.persistCurrentScreenshot();
+        tc.attachBase64ImageToCard(cardId, ms.currentBase64Image, updateUploadProgress, cardWasCreated);
+      });
+    } else {
+      $('#progress-bar-container').css('display', 'block');
+      ms.persistCurrentScreenshot();
+      tc.attachBase64ImageToCard(cardId, ms.currentBase64Image, updateUploadProgress, cardWasCreated);    
+    }  
   });
 });
 
@@ -232,6 +246,10 @@ function initializeBoardsAndLists() {
   populateBoardsList(function() {
     $('#boardsList').trigger('change');
   });
+}
+
+if (localStorage.cardOnTop) {
+  $('#on-top').prop('checked', true);
 }
 
 
