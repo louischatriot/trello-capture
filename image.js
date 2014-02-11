@@ -230,7 +230,7 @@ ModifiedScreenshot.prototype.initializeDrawingMode = function () {
 
   this.$screenshotPane.on('mousemove', function (evt) {
     if (! self.currentShape) { return; }
-    self.currentShape.updatePosition(Math.min(evt.clientY, self.canvasH - 3), evt.clientX);
+    self.currentShape.updatePosition(Math.min(evt.clientY, document.body.clientHeight - 3), evt.clientX);
   });
 };
 
