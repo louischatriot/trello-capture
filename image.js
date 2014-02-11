@@ -1,7 +1,47 @@
 /*
- * Image management
+ * Shapes to be drawn
  */
  
+function Rectangle (top, left, color, $container) {
+  this.originTop = top;
+  this.originLeft = left;
+  this.color = color || '#ffaa00';   // Default colour is orange
+  
+  // $transient is a pointer to the transient (i.e. not persisted to the canvas) rectangle
+  // Upon creation, the rectangle immediatly becomes visible
+  this.$transient = $('<div></div>');
+  $container.append(this.$transient);
+  this.$transient.css('position', 'fixed');
+  this.$transient.css('top', this.originTop + 'px');
+  this.$transient.css('left', this.originLeft + 'px');
+  this.$transient.css('border', this.color + ' solid 6px');
+  this.$transient.css('box-shadow', '2px 2px 1px #666, -2px -2px 1px #666, -2px 2px 1px #666, 2px -2px 1px #666');
+}
+
+// Called when the mouse position changes
+Rectangle.prototype.updatePosition = function (top, left) {
+  if (this.originTop <= top) {
+    this.$transient.css('height', (top - this.originTop) + 'px');
+    this.$transient.css('top', this.originTop + 'px');
+  } else {
+    this.$transient.css('height', (this.originTop - top) + 'px');
+    this.$transient.css('top', top + 'px');  
+  }
+  
+  if (this.originLeft <= left) {
+    this.$transient.css('width', (left - this.originLeft) + 'px');
+    this.$transient.css('left', this.originLeft + 'px');
+  } else {
+    this.$transient.css('width', (this.originLeft - left) + 'px');
+    this.$transient.css('left', left + 'px');  
+  }
+};
+
+
+
+/*
+ * Drawing board management
+ */
 function ModifiedScreenshot () {
   this.canvas = document.getElementById('canvas');
   this.ctx = this.canvas.getContext('2d');
@@ -15,15 +55,11 @@ function ModifiedScreenshot () {
   
   $('#canvas').attr('width', this.canvasW);
   $('#canvas').attr('height', this.canvasH);
-  // $('#canvas').css('position', 'relative');
-  // $('#canvas').css('top', (100 * (1 - this.scale)) + '%');  
   
-  // State of the currently drawn rectangle
-  this.$currentRectangle = null;
-  this.originTop = null;
-  this.originLeft = null;
-
+  // State of the "paintbrush"
   this.currentColor;
+  this.currentShape;
+  this.drawnShapes = [];
 }
 
 
@@ -57,57 +93,35 @@ ModifiedScreenshot.prototype.switchToRectangleDrawingMode = function () {
   var self = this;
 
   this.$screenshotPane.on('mousedown', function (evt) {
-    self.originTop = evt.clientY;
-    self.originLeft = evt.clientX;
-  
-    self.$currentRectangle = $('<div class="rectangle"></div>');
-    self.$screenshotPane.append(self.$currentRectangle);
-    self.$currentRectangle.css('top', self.originTop + 'px');
-    self.$currentRectangle.css('left', self.originLeft + 'px');
-    self.$currentRectangle.css('border', (self.currentColor || '#ffaa00') + ' solid 6px');
+    self.currentShape = new Rectangle(evt.clientY, evt.clientX, self.currentColor, self.$screenshotPane);
   });
 
   this.$screenshotPane.on('mouseup', function () {
-    var left = parseInt(self.$currentRectangle.css('left').replace(/px/, ""), 10) - (self.canvasW * (1 - self.scale) / self.scale)
-      , top = parseInt(self.$currentRectangle.css('top').replace(/px/, ""), 10) - (self.canvasH * (1 - self.scale) / self.scale)
-      , width = parseInt(self.$currentRectangle.css('width').replace(/px/, ""), 10)
-      , height = parseInt(self.$currentRectangle.css('height').replace(/px/, ""), 10)
-      ;
-    
-    self.ctx.setLineWidth(6);
-    self.ctx.rect(left, top, width, height);
-    self.ctx.strokeStyle = self.currentColor || '#ffaa00';   // TODO: understand why the change in stroke color is system-wide
-    self.ctx.shadowColor = '#666666';
-    self.ctx.shadowOffsetX = 1;
-    self.ctx.shadowOffsetY = 1;
-    self.ctx.stroke();
+    // var left = parseInt(self.$currentRectangle.css('left').replace(/px/, ""), 10) - (self.canvasW * (1 - self.scale) / self.scale)
+      // , top = parseInt(self.$currentRectangle.css('top').replace(/px/, ""), 10) - (self.canvasH * (1 - self.scale) / self.scale)
+      // , width = parseInt(self.$currentRectangle.css('width').replace(/px/, ""), 10)
+      // , height = parseInt(self.$currentRectangle.css('height').replace(/px/, ""), 10)
+      // ;
 
-    self.$currentRectangle.css('display', 'none');
-    self.$currentRectangle = null;
+    // self.ctx.setLineWidth(6);
+    // self.ctx.rect(left, top, width, height);
+    // self.ctx.strokeStyle = self.currentColor || '#ffaa00';   // TODO: understand why the change in stroke color is system-wide
+    // self.ctx.shadowColor = '#666666';
+    // self.ctx.shadowOffsetX = 1;
+    // self.ctx.shadowOffsetY = 1;
+    // self.ctx.stroke();
+
+    // self.$currentRectangle.css('display', 'none');
+    // self.$currentRectangle = null;
+
+    self.drawnShapes.push(self.currentShape);
+    self.currentShape = null;
   });
 
   this.$screenshotPane.on('mousemove', function (evt) {
-    if (! self.$currentRectangle) { return; }
-    
-    var currentX = evt.clientX
-      , currentY = Math.min(evt.clientY, self.canvasH - 3)
-      ;
+    if (! self.currentShape) { return; }
 
-    if (self.originTop <= currentY) {
-      self.$currentRectangle.css('height', (currentY - self.originTop) + 'px');
-      self.$currentRectangle.css('top', self.originTop + 'px');
-    } else {
-      self.$currentRectangle.css('height', (self.originTop - currentY) + 'px');
-      self.$currentRectangle.css('top', currentY + 'px');  
-    }
-    
-    if (self.originLeft <= currentX) {
-      self.$currentRectangle.css('width', (currentX - self.originLeft) + 'px');
-      self.$currentRectangle.css('left', self.originLeft + 'px');
-    } else {
-      self.$currentRectangle.css('width', (self.originLeft - currentX) + 'px');
-      self.$currentRectangle.css('left', currentX + 'px');  
-    }
+    self.currentShape.updatePosition(Math.min(evt.clientY, self.canvasH - 3), evt.clientX);
   });
 };
 
