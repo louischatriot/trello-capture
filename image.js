@@ -69,6 +69,72 @@ Rectangle.prototype.hide = function () {
 };
 
 
+// === Arrow is not done so for now it's only a big rectangle to see the difference
+function Arrow (top, left, color, ms) {
+  this.originTop = top;
+  this.originLeft = left;
+  this.color = color || '#ffaa00';   // Default colour is orange
+  this.ms = ms;
+  
+  // $transient is a pointer to the transient (i.e. not persisted to the canvas) rectangle
+  // Upon creation, the rectangle immediatly becomes visible
+  this.$transient = $('<div></div>');
+  this.ms.$screenshotPane.append(this.$transient);
+  this.$transient.css('position', 'fixed');
+  this.$transient.css('top', this.originTop + 'px');
+  this.$transient.css('left', this.originLeft + 'px');
+  this.$transient.css('border', this.color + ' solid 16px');
+  this.$transient.css('box-shadow', '2px 2px 1px #666, -2px -2px 1px #666, -2px 2px 1px #666, 2px -2px 1px #666');
+}
+
+// Called when the mouse position changes
+Arrow.prototype.updatePosition = function (top, left) {
+  this.lastTop = top;
+  this.lastLeft = left;
+
+  if (this.originTop <= top) {
+    this.$transient.css('height', (top - this.originTop) + 'px');
+    this.$transient.css('top', this.originTop + 'px');
+  } else {
+    this.$transient.css('height', (this.originTop - top) + 'px');
+    this.$transient.css('top', top + 'px');  
+  }
+  
+  if (this.originLeft <= left) {
+    this.$transient.css('width', (left - this.originLeft) + 'px');
+    this.$transient.css('left', this.originLeft + 'px');
+  } else {
+    this.$transient.css('width', (this.originLeft - left) + 'px');
+    this.$transient.css('left', left + 'px');  
+  }
+};
+
+// Persist this shape on the corresponding ModifiedScreenshot's canvas
+Arrow.prototype.persistOnCanvas = function () {
+  var left = parseInt(this.$transient.css('left').replace(/px/, ""), 10) - (this.ms.canvasW * (1 - this.ms.scale) / this.ms.scale)
+    , top = parseInt(this.$transient.css('top').replace(/px/, ""), 10) - (this.ms.canvasH * (1 - this.ms.scale) / this.ms.scale)
+    , width = parseInt(this.$transient.css('width').replace(/px/, ""), 10)
+    , height = parseInt(this.$transient.css('height').replace(/px/, ""), 10)
+    ;
+
+  this.ms.ctx.setLineWidth(6);
+  this.ms.ctx.rect(left, top, width, height);
+  this.ms.ctx.strokeStyle = this.color;   // TODO: understand why the change in stroke color is system-wide
+  this.ms.ctx.shadowColor = '#666666';
+  this.ms.ctx.shadowOffsetX = 1;
+  this.ms.ctx.shadowOffsetY = 1;
+  this.ms.ctx.stroke();
+};
+
+Arrow.prototype.hide = function () {
+  this.$transient.css('display', 'none');
+};
+
+
+
+
+
+
 /*
  * Drawing board management
  */
@@ -85,8 +151,11 @@ function ModifiedScreenshot () {
   
   $('#canvas').attr('width', this.canvasW);
   $('#canvas').attr('height', this.canvasH);
+
+  this.possibleShapes = { rectangle: Rectangle, arrow: Arrow }
   
   // State of the "paintbrush"
+  this.selectedShape;
   this.currentColor;
   this.currentShape;
   this.drawnShapes = [];
@@ -126,14 +195,20 @@ ModifiedScreenshot.prototype.initColorPicker = function () {
 };
  
 
+// newShape is a string and must be a key to this.possibleShapes 
+ModifiedScreenshot.prototype.updateSelectedShape = function (newShape) {
+  this.selectedShape = this.possibleShapes[newShape];
+};
+
 /*
- * Manage rectangle drawing mode
+ * Let user draw shapes on the screenshot
  */
-ModifiedScreenshot.prototype.switchToRectangleDrawingMode = function () {
-  var self = this;
+ModifiedScreenshot.prototype.initializeDrawingMode = function () {
+  var self = this;  
+  this.updateSelectedShape('rectangle');   // By default, draw a rectangle
 
   this.$screenshotPane.on('mousedown', function (evt) {
-    self.currentShape = new Rectangle(evt.clientY, evt.clientX, self.currentColor, self);
+    self.currentShape = new self.selectedShape(evt.clientY, evt.clientX, self.currentColor, self);
   });
 
   this.$screenshotPane.on('mouseup', function () {
@@ -169,7 +244,7 @@ ModifiedScreenshot.prototype.setAsBackground = function (base64Image) {
   image.onload = function() {
     // TODO: Calculate non-scaling coordinates better than that
     self.ctx.drawImage(image, 0, 0, self.canvasW, self.canvasH);
-    self.switchToRectangleDrawingMode();
+    self.initializeDrawingMode();
     $('body').trigger('trelloCapture.screenshotTaken');
   };
 };

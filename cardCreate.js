@@ -188,13 +188,18 @@ $leftPane.on('mouseout', function() {
 // Drawing board
 var ms = new ModifiedScreenshot();
 ms.initColorPicker();
-ms.switchToRectangleDrawingMode();   // TODO: remove, for testing only
+ms.initializeDrawingMode();   // TODO: remove, for testing only
+
 $('#clear-board').on('click', function () {
   ms.clearAllDrawings();
 });
 
+$('#shape').on('change', function () {
+  ms.updateSelectedShape($('#shape option:selected').val());
+});
 
-window.ms = ms;
+
+window.ms = ms;   // TODO: remove, for testing only
 
 
 // Manage background-color behavior on click for labels
