@@ -4,6 +4,7 @@
  * - The constructor that creates and draw the transient shape
  * - updatePosition that redraws the shape when the mouse moves
  * - persistOnCanvas that draws the transient shape on the underlying canvas
+ * - hide that hides the shape (figures ...)
  */
  
 // ms is a ModifiedScreenshot object
@@ -63,6 +64,9 @@ Rectangle.prototype.persistOnCanvas = function () {
   this.ms.ctx.stroke();
 };
 
+Rectangle.prototype.hide = function () {
+  this.$transient.css('display', 'none');
+};
 
 
 /*
@@ -135,7 +139,13 @@ ModifiedScreenshot.prototype.switchToRectangleDrawingMode = function () {
 };
 
 
+// Create the modified screenshot and transform it into a data url
 ModifiedScreenshot.prototype.persistCurrentScreenshot = function () {
+  this.drawnShapes.forEach(function (shape) {
+    shape.hide();
+    shape.persistOnCanvas();
+  });
+
   this.currentBase64Image = this.canvas.toDataURL("image/jpeg");
 };
 
