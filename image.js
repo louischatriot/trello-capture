@@ -201,7 +201,7 @@ ModifiedScreenshot.prototype.initColorPicker = function () {
     $color.css('background-color', self.currentColor);
   });
   
-  // Simukate a user picking the default color, orange
+  // Simulate a user picking the default color, orange
   $color.trigger('change');
 };
  
@@ -255,7 +255,7 @@ ModifiedScreenshot.prototype.setAsBackground = function (base64Image) {
   image.onload = function() {
     // TODO: Calculate non-scaling coordinates better than that
     self.ctx.drawImage(image, 0, 0, self.canvasW, self.canvasH);
-    self.initializeDrawingMode();
+    // self.initializeDrawingMode();   // TODO: uncomment
     $('body').trigger('trelloCapture.screenshotTaken');
   };
 };
