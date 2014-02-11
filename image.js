@@ -216,7 +216,7 @@ ModifiedScreenshot.prototype.updateSelectedShape = function (newShape) {
  */
 ModifiedScreenshot.prototype.initializeDrawingMode = function () {
   var self = this;  
-  this.updateSelectedShape('arrow');   // By default, draw a rectangle
+  this.updateSelectedShape('rectangle');   // By default, draw a rectangle
 
   this.$screenshotPane.on('mousedown', function (evt) {
     if (self.currentShape) { return; }
