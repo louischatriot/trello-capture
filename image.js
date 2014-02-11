@@ -1,16 +1,22 @@
 /*
  * Shapes to be drawn
+ * The needed API for a shape is:
+ * - The constructor that creates and draw the transient shape
+ * - updatePosition that redraws the shape when the mouse moves
+ * - persistOnCanvas that draws the transient shape on the underlying canvas
  */
  
-function Rectangle (top, left, color, $container) {
+// ms is a ModifiedScreenshot object
+function Rectangle (top, left, color, ms) {
   this.originTop = top;
   this.originLeft = left;
   this.color = color || '#ffaa00';   // Default colour is orange
+  this.ms = ms;
   
   // $transient is a pointer to the transient (i.e. not persisted to the canvas) rectangle
   // Upon creation, the rectangle immediatly becomes visible
   this.$transient = $('<div></div>');
-  $container.append(this.$transient);
+  this.ms.$screenshotPane.append(this.$transient);
   this.$transient.css('position', 'fixed');
   this.$transient.css('top', this.originTop + 'px');
   this.$transient.css('left', this.originLeft + 'px');
@@ -20,6 +26,9 @@ function Rectangle (top, left, color, $container) {
 
 // Called when the mouse position changes
 Rectangle.prototype.updatePosition = function (top, left) {
+  this.lastTop = top;
+  this.lastLeft = left;
+
   if (this.originTop <= top) {
     this.$transient.css('height', (top - this.originTop) + 'px');
     this.$transient.css('top', this.originTop + 'px');
@@ -35,6 +44,23 @@ Rectangle.prototype.updatePosition = function (top, left) {
     this.$transient.css('width', (this.originLeft - left) + 'px');
     this.$transient.css('left', left + 'px');  
   }
+};
+
+// Persist this shape on the corresponding ModifiedScreenshot's canvas
+Rectangle.prototype.persistOnCanvas = function () {
+  var left = parseInt(this.$transient.css('left').replace(/px/, ""), 10) - (this.ms.canvasW * (1 - this.ms.scale) / this.ms.scale)
+    , top = parseInt(this.$transient.css('top').replace(/px/, ""), 10) - (this.ms.canvasH * (1 - this.ms.scale) / this.ms.scale)
+    , width = parseInt(this.$transient.css('width').replace(/px/, ""), 10)
+    , height = parseInt(this.$transient.css('height').replace(/px/, ""), 10)
+    ;
+
+  this.ms.ctx.setLineWidth(6);
+  this.ms.ctx.rect(left, top, width, height);
+  this.ms.ctx.strokeStyle = this.color;   // TODO: understand why the change in stroke color is system-wide
+  this.ms.ctx.shadowColor = '#666666';
+  this.ms.ctx.shadowOffsetX = 1;
+  this.ms.ctx.shadowOffsetY = 1;
+  this.ms.ctx.stroke();
 };
 
 
@@ -93,27 +119,10 @@ ModifiedScreenshot.prototype.switchToRectangleDrawingMode = function () {
   var self = this;
 
   this.$screenshotPane.on('mousedown', function (evt) {
-    self.currentShape = new Rectangle(evt.clientY, evt.clientX, self.currentColor, self.$screenshotPane);
+    self.currentShape = new Rectangle(evt.clientY, evt.clientX, self.currentColor, self);
   });
 
   this.$screenshotPane.on('mouseup', function () {
-    // var left = parseInt(self.$currentRectangle.css('left').replace(/px/, ""), 10) - (self.canvasW * (1 - self.scale) / self.scale)
-      // , top = parseInt(self.$currentRectangle.css('top').replace(/px/, ""), 10) - (self.canvasH * (1 - self.scale) / self.scale)
-      // , width = parseInt(self.$currentRectangle.css('width').replace(/px/, ""), 10)
-      // , height = parseInt(self.$currentRectangle.css('height').replace(/px/, ""), 10)
-      // ;
-
-    // self.ctx.setLineWidth(6);
-    // self.ctx.rect(left, top, width, height);
-    // self.ctx.strokeStyle = self.currentColor || '#ffaa00';   // TODO: understand why the change in stroke color is system-wide
-    // self.ctx.shadowColor = '#666666';
-    // self.ctx.shadowOffsetX = 1;
-    // self.ctx.shadowOffsetY = 1;
-    // self.ctx.stroke();
-
-    // self.$currentRectangle.css('display', 'none');
-    // self.$currentRectangle = null;
-
     self.drawnShapes.push(self.currentShape);
     self.currentShape = null;
   });

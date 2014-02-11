@@ -190,6 +190,7 @@ var ms = new ModifiedScreenshot();
 ms.initColorPicker();
 ms.switchToRectangleDrawingMode();   // TODO: remove, for testing only
 
+window.ms = ms;
 
 
 // Manage background-color behavior on click for labels
