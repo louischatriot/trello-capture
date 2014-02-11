@@ -29,6 +29,10 @@
   background-color: #fff;
 }
 
+#color {
+  width: 70px;
+}
+
 #progress-bar-container {
   border: solid 1px #666;
   width: 100%;
@@ -85,7 +89,6 @@
 
 .rectangle {
   position: fixed;
-  border: solid 6px #ffaa00;
 }
 
 #login {

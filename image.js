@@ -1,7 +1,6 @@
 /*
  * Image management
  */
-
  
 function ModifiedScreenshot () {
   this.canvas = document.getElementById('canvas');
@@ -23,9 +22,32 @@ function ModifiedScreenshot () {
   this.$currentRectangle = null;
   this.originTop = null;
   this.originLeft = null;
-  
-  window.iii = this;
+
+  this.currentColor;
 }
+
+
+/**
+ * Manage color picker
+ * Still need to understand how to override the blue hue when changing an option
+ */
+ModifiedScreenshot.prototype.initColorPicker = function () {
+  var $color = $('#color')
+    , colors = [ '#ffaa00', '#ff0000', '#00ffff' ]
+    , self = this;
+
+  colors.forEach(function(c) {
+    $color.append('<option value="' + c + '" style="background-color: ' + c + ';"></option>');
+  });
+
+  $color.on('change', function () {
+    self.currentColor = $('#color option:selected').val();
+    $color.css('background-color', self.currentColor);
+  });
+  
+  // Simukate a user picking the default color, orange
+  $color.trigger('change');
+};
  
 
 /*
@@ -42,6 +64,7 @@ ModifiedScreenshot.prototype.switchToRectangleDrawingMode = function () {
     self.$screenshotPane.append(self.$currentRectangle);
     self.$currentRectangle.css('top', self.originTop + 'px');
     self.$currentRectangle.css('left', self.originLeft + 'px');
+    self.$currentRectangle.css('border', (self.currentColor || '#ffaa00') + ' solid 6px');
   });
 
   this.$screenshotPane.on('mouseup', function () {
@@ -53,7 +76,7 @@ ModifiedScreenshot.prototype.switchToRectangleDrawingMode = function () {
     
     self.ctx.setLineWidth(6);
     self.ctx.rect(left, top, width, height);
-    self.ctx.strokeStyle = '#ffaa00';
+    self.ctx.strokeStyle = self.currentColor || '#ffaa00';   // TODO: understand why the change in stroke color is system-wide
     self.ctx.shadowColor = '#666666';
     self.ctx.shadowOffsetX = 1;
     self.ctx.shadowOffsetY = 1;

@@ -14,13 +14,35 @@
 
   <!-- Top control pane -->
   <div id="top-pane">
+      
+    <form class="form-inline" role="form">
+      <div class="form-group">
+        <label class="sr-only" for="exampleInputEmail2">Email address</label>
+        <input type="email" class="form-control" id="exampleInputEmail2" placeholder="Enter email">
+      </div>
+      <div class="form-group">
+        <label class="sr-only" for="exampleInputEmail2">Color</label>
+        <select id="color" class="form-control"></select>
+      </div>
+      <div class="form-group">
+        <label class="sr-only" for="exampleInputPassword2">Password</label>
+        <input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password">
+      </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox"> Remember me
+        </label>
+      </div>
+      <button type="submit" class="btn btn-default">Sign in</button>
+    </form>
+    
   </div>
 
   
   <!-- Left overlay control pane -->  
   <div id="left-pane">
     <h1>Trello Capture</h1><br><br>
-
+    
     <div class="form-group">
       <label>Board</label>
       <select id="boardsList" class="form-control"></select>

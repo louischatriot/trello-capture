@@ -6,6 +6,7 @@ var tc = new TrelloClient()
   , chosenLabels = {}
   , possibleLabels = ["red", "orange", "yellow", "purple", "blue", "green"]
   , $leftPane = $('#left-pane')
+  , $topPane = $('#top-pane')
   ;
 
 
@@ -104,7 +105,7 @@ function updateUploadProgress(e) {
   if (progress === 100) {
     setTimeout(function () {
       $('#cardWasCreated').css('display', 'block');
-    }, 700);
+    }, 1000);
   }
 }
 
@@ -161,8 +162,10 @@ var totalHeight = $('body').height()
   , baseLeftPanePosition = Math.max(totalWidth - rightPanesWidth - leftPaneWidth, 20 - leftPaneWidth)
   ;
 
-$('#top-pane').css('width', rightPanesWidth + 'px');
-$('#top-pane').css('height', topPaneHeight + 'px');
+$topPane.css('width', rightPanesWidth + 'px');
+$topPane.css('height', topPaneHeight + 'px');
+$topPane.css('line-height', topPaneHeight + 'px');   // Vertically center contents on a single line
+$topPane.css('padding-left', (30 + leftPaneWidth - totalWidth + rightPanesWidth) + 'px');   // 30px from border of left pane when it's totally on screen
 
 $('#screenshot-pane').css('width', rightPanesWidth + 'px');
 $('#screenshot-pane').css('height', screenshotPaneHeight + 'px');
@@ -181,7 +184,10 @@ $leftPane.on('mouseout', function() {
   $leftPane.css('left', baseLeftPanePosition + 'px');
 })
 
+
+// Drawing board
 var ms = new ModifiedScreenshot();
+ms.initColorPicker();
 
 
 // Manage background-color behavior on click for labels
@@ -262,7 +268,7 @@ tc.getLoggedUsername(function (err) {
   if (tc.username) {
     getTrelloCredentialsAndInitialize();
   } else {
-    $('#login').css('display', 'block');
+    // $('#login').css('display', 'none');   // TODO: uncomment
   }
 });
 
