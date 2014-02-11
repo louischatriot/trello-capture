@@ -94,6 +94,16 @@ function ModifiedScreenshot () {
 
 
 /**
+ * Clear all drawings to date
+ */
+ModifiedScreenshot.prototype.clearAllDrawings = function () {
+  this.currentShape = null;
+  this.drawnShapes.forEach(function(shape) { shape.hide(); });
+  this.drawnShapes = [];
+};
+
+
+/**
  * Manage color picker
  * Still need to understand how to override the blue hue when changing an option
  */

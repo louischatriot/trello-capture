@@ -189,6 +189,10 @@ $leftPane.on('mouseout', function() {
 var ms = new ModifiedScreenshot();
 ms.initColorPicker();
 ms.switchToRectangleDrawingMode();   // TODO: remove, for testing only
+$('#clear-board').on('click', function () {
+  ms.clearAllDrawings();
+});
+
 
 window.ms = ms;
 
