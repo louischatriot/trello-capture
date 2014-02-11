@@ -76,6 +76,10 @@ function Arrow (top, left, color, ms) {
   this.color = color || '#ffaa00';   // Default colour is orange
   this.ms = ms;
   
+  // Original dimensions of the image
+  this.L0 = 360;
+  this.l0 = 50;
+  
   // $transient is a pointer to the transient (i.e. not persisted to the canvas) rectangle
   // Upon creation, the rectangle immediatly becomes visible
   this.$transient = $('<div></div>');
@@ -83,8 +87,9 @@ function Arrow (top, left, color, ms) {
   this.$transient.css('position', 'fixed');
   this.$transient.css('top', this.originTop + 'px');
   this.$transient.css('left', this.originLeft + 'px');
-  this.$transient.css('border', this.color + ' solid 16px');
-  this.$transient.css('box-shadow', '2px 2px 1px #666, -2px -2px 1px #666, -2px 2px 1px #666, 2px -2px 1px #666');
+  this.$transient.css('background-image', 'url(arrow.png)');
+  this.$transient.css('background-repeat', 'no-repeat');
+  this.$transient.css('background-size', 'contain');
 }
 
 // Called when the mouse position changes
@@ -92,21 +97,27 @@ Arrow.prototype.updatePosition = function (top, left) {
   this.lastTop = top;
   this.lastLeft = left;
 
-  if (this.originTop <= top) {
-    this.$transient.css('height', (top - this.originTop) + 'px');
-    this.$transient.css('top', this.originTop + 'px');
-  } else {
-    this.$transient.css('height', (this.originTop - top) + 'px');
-    this.$transient.css('top', top + 'px');  
+  // Don't crash if atan can't be calculated (very temporary state anyway)
+  if (this.lastLeft === this.originLeft) { return; }
+
+  var ol = (this.lastLeft + this.originLeft) / 2
+    , ot = (this.lastTop + this.originTop) / 2
+    , L = Math.sqrt(Math.pow(this.lastLeft - this.originLeft, 2) + Math.pow(this.lastTop - this.originTop, 2))
+    , l = L * this.l0 / this.L0
+    , tl = ol - (L / 2)
+    , tt = ot - (l / 2)
+    , theta = Math.atan((this.lastTop - this.originTop) / (this.lastLeft - this.originLeft)) * 180 / Math.PI
+    ;
+    
+  if (this.lastLeft < this.originLeft) {
+    theta += 180;
   }
-  
-  if (this.originLeft <= left) {
-    this.$transient.css('width', (left - this.originLeft) + 'px');
-    this.$transient.css('left', this.originLeft + 'px');
-  } else {
-    this.$transient.css('width', (this.originLeft - left) + 'px');
-    this.$transient.css('left', left + 'px');  
-  }
+    
+  this.$transient.css('height', l + 'px');
+  this.$transient.css('width', L + 'px');
+  this.$transient.css('top', tt + 'px');
+  this.$transient.css('left', tl + 'px');
+  this.$transient.css('-webkit-transform', 'rotate(' + theta + 'deg)');  
 };
 
 // Persist this shape on the corresponding ModifiedScreenshot's canvas
@@ -117,7 +128,7 @@ Arrow.prototype.persistOnCanvas = function () {
     , height = parseInt(this.$transient.css('height').replace(/px/, ""), 10)
     ;
 
-  this.ms.ctx.setLineWidth(6);
+  this.ms.ctx.setLineWidth(16);
   this.ms.ctx.rect(left, top, width, height);
   this.ms.ctx.strokeStyle = this.color;   // TODO: understand why the change in stroke color is system-wide
   this.ms.ctx.shadowColor = '#666666';
@@ -205,9 +216,10 @@ ModifiedScreenshot.prototype.updateSelectedShape = function (newShape) {
  */
 ModifiedScreenshot.prototype.initializeDrawingMode = function () {
   var self = this;  
-  this.updateSelectedShape('rectangle');   // By default, draw a rectangle
+  this.updateSelectedShape('arrow');   // By default, draw a rectangle
 
   this.$screenshotPane.on('mousedown', function (evt) {
+    if (self.currentShape) { return; }
     self.currentShape = new self.selectedShape(evt.clientY, evt.clientX, self.currentColor, self);
   });
 
@@ -218,7 +230,6 @@ ModifiedScreenshot.prototype.initializeDrawingMode = function () {
 
   this.$screenshotPane.on('mousemove', function (evt) {
     if (! self.currentShape) { return; }
-
     self.currentShape.updatePosition(Math.min(evt.clientY, self.canvasH - 3), evt.clientX);
   });
 };
