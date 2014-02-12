@@ -76,7 +76,8 @@ function Arrow (top, left, color, ms) {
   this.color = color || '#ffaa00';   // Default colour is orange
   this.ms = ms;
   
-  // Original dimensions of the image
+  // Original parameters of the image
+  this.arrowImage = 'arrow.png'
   this.L0 = 360;
   this.l0 = 50;
   
@@ -91,6 +92,48 @@ function Arrow (top, left, color, ms) {
   this.$transient.css('background-repeat', 'no-repeat');
   this.$transient.css('background-size', 'contain');
 }
+
+// The base64 image data for the arrow is a static member of Arrow
+Arrow.arrowData = null; 
+Arrow.changeColor = function (newColor) {
+  var img = new Image()
+  img.src = 'arrow.png';
+  img.onload = function() {
+    console.log(img);
+    console.log(img.naturalWidth);
+    console.log(img.naturalHeight);
+    console.log(img.width);
+    console.log(img.height);
+    
+    var canvas = document.createElement("canvas")
+      , ctx = canvas.getContext("2d")
+      , originalPixels
+      , currentPixels
+      ;
+      
+    ctx.drawImage(img, 0, 0, 360, 50);
+    originalPixels = ctx.getImageData(0, 0, 360, 50);
+    currentPixels = ctx.getImageData(0, 0, 360, 50);
+
+    // for(var i = 0; i < originalPixels.data.length; i += 4)
+    // {
+      // if(originalPixels.data[i + 3] > 0) // If it's not a transparent pixel
+      // {
+          // originalPixels.data[i] = 129;
+          // originalPixels.data[i + 1] = 0;
+          // originalPixels.data[i + 2] = 0;
+      // }
+    // }
+
+    ctx.putImageData(originalPixels, 0, 0);
+    Arrow.arrowData = canvas.toDataURL("image/png");
+    console.log("----------------------");
+    console.log(Arrow.arrowData);
+    
+    var $ni = $('<img src="' + Arrow.arrowData + '">')
+    $('#left-pane').append($ni);
+  };
+};
 
 // Called when the mouse position changes
 Arrow.prototype.updatePosition = function (top, left) {
