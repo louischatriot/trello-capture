@@ -123,9 +123,9 @@ Arrow.changeColor = function (_newColor) {
     {
       if(originalPixels.data[i + 3] > 0) // If it's not a transparent pixel
       {
-          originalPixels.data[i] = newColor.R;
-          originalPixels.data[i + 1] = newColor.G;
-          originalPixels.data[i + 2] = newColor.B;
+        originalPixels.data[i] = Math.floor((255 - originalPixels.data[i]) * newColor.R / 255);
+        originalPixels.data[i + 1] = Math.floor((255 - originalPixels.data[i + 1]) * newColor.G / 255);
+        originalPixels.data[i + 2] = Math.floor((255 - originalPixels.data[i + 2]) * newColor.B / 255);
       }
     }
 
