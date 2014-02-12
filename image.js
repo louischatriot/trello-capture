@@ -76,11 +76,6 @@ function Arrow (top, left, color, ms) {
   this.color = color || '#ffaa00';   // Default colour is orange
   this.ms = ms;
   
-  // Original parameters of the image
-  this.arrowImage = 'arrow.png'
-  this.L0 = 360;
-  this.l0 = 50;
-  
   // $transient is a pointer to the transient (i.e. not persisted to the canvas) rectangle
   // Upon creation, the rectangle immediatly becomes visible
   this.$transient = $('<div></div>');
@@ -88,50 +83,54 @@ function Arrow (top, left, color, ms) {
   this.$transient.css('position', 'fixed');
   this.$transient.css('top', this.originTop + 'px');
   this.$transient.css('left', this.originLeft + 'px');
-  this.$transient.css('background-image', 'url(arrow.png)');
+  this.$transient.css('background-image', 'url(' + Arrow.arrowData + ')');
   this.$transient.css('background-repeat', 'no-repeat');
   this.$transient.css('background-size', 'contain');
 }
 
+// Original parameters of the image
+Arrow.arrowImage = 'arrow.png'
+Arrow.L0 = 360;
+Arrow.l0 = 50;
+
 // The base64 image data for the arrow is a static member of Arrow
 Arrow.arrowData = null; 
-Arrow.changeColor = function (newColor) {
+Arrow.changeColor = function (_newColor) {
+  var long = parseInt(_newColor.replace(/^#/, ""), 16)
+    , newColor = { R: (long >>> 16) & 0xff
+                 , G: (long >>> 8) & 0xff
+                 , B: long & 0xff
+                 }
+    ;
+
   var img = new Image()
   img.src = 'arrow.png';
   img.onload = function() {
-    console.log(img);
-    console.log(img.naturalWidth);
-    console.log(img.naturalHeight);
-    console.log(img.width);
-    console.log(img.height);
-    
     var canvas = document.createElement("canvas")
-      , ctx = canvas.getContext("2d")
+      , ctx
       , originalPixels
       , currentPixels
       ;
       
-    ctx.drawImage(img, 0, 0, 360, 50);
-    originalPixels = ctx.getImageData(0, 0, 360, 50);
-    currentPixels = ctx.getImageData(0, 0, 360, 50);
+    canvas.width = Arrow.L0;
+    canvas.height = Arrow.l0;
+    ctx = canvas.getContext("2d")
+    ctx.drawImage(img, 0, 0, Arrow.L0, Arrow.l0);
+    originalPixels = ctx.getImageData(0, 0, Arrow.L0, Arrow.l0);
+    currentPixels = ctx.getImageData(0, 0, Arrow.L0, Arrow.l0);
 
-    // for(var i = 0; i < originalPixels.data.length; i += 4)
-    // {
-      // if(originalPixels.data[i + 3] > 0) // If it's not a transparent pixel
-      // {
-          // originalPixels.data[i] = 129;
-          // originalPixels.data[i + 1] = 0;
-          // originalPixels.data[i + 2] = 0;
-      // }
-    // }
+    for(var i = 0; i < originalPixels.data.length; i += 4)
+    {
+      if(originalPixels.data[i + 3] > 0) // If it's not a transparent pixel
+      {
+          originalPixels.data[i] = newColor.R;
+          originalPixels.data[i + 1] = newColor.G;
+          originalPixels.data[i + 2] = newColor.B;
+      }
+    }
 
     ctx.putImageData(originalPixels, 0, 0);
     Arrow.arrowData = canvas.toDataURL("image/png");
-    console.log("----------------------");
-    console.log(Arrow.arrowData);
-    
-    var $ni = $('<img src="' + Arrow.arrowData + '">')
-    $('#left-pane').append($ni);
   };
 };
 
@@ -146,7 +145,7 @@ Arrow.prototype.updatePosition = function (top, left) {
   var ol = (this.lastLeft + this.originLeft) / 2
     , ot = (this.lastTop + this.originTop) / 2
     , L = Math.sqrt(Math.pow(this.lastLeft - this.originLeft, 2) + Math.pow(this.lastTop - this.originTop, 2))
-    , l = L * this.l0 / this.L0
+    , l = L * Arrow.l0 / Arrow.L0
     , tl = ol - (L / 2)
     , tt = ot - (l / 2)
     , theta = Math.atan((this.lastTop - this.originTop) / (this.lastLeft - this.originLeft)) * 180 / Math.PI
@@ -241,6 +240,7 @@ ModifiedScreenshot.prototype.initColorPicker = function () {
 
   $color.on('change', function () {
     self.currentColor = $('#color option:selected').val();
+    Arrow.changeColor(self.currentColor);
     $color.css('background-color', self.currentColor);
   });
   
