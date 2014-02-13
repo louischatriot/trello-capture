@@ -191,6 +191,7 @@ ms.initColorPicker();
 // ms.initializeDrawingMode();   // TODO: remove, for testing only
 
 $('#clear-board').on('click', function () {
+  // ms.persistCurrentScreenshot();
   ms.clearAllDrawings();
 });
 
@@ -198,7 +199,7 @@ $('#shape').on('change', function () {
   ms.updateSelectedShape($('#shape option:selected').val());
 });
 
-
+// ms.initializeDrawingMode();
 
 
 window.ms = ms;   // TODO: remove, for testing only
@@ -246,18 +247,20 @@ $('#createCard').on('click', function () {
   
   // Create card
   tc.createCardAtBottomOfCurrentList(selectedListId, $('#cardName').val(), $('#cardDesc').val(), getSelectedLabels(), function (err, cardId) {
-    // Put it on top if needed, then attach screenshot (code is not DRY but we can live with it if it's only in this place)
-    if ($('#on-top').prop('checked')) {
-      tc.putCardOnTopOfList(cardId, function () {    
-        $('#progress-bar-container').css('display', 'block');
-        ms.persistCurrentScreenshot();
+    async.waterfall([
+      function (cb) {
+        if ($('#on-top').prop('checked')) {
+          tc.putCardOnTopOfList(cardId, cb);
+        } else {
+          return cb();
+        }      
+      }
+    ], function () {
+      $('#progress-bar-container').css('display', 'block');
+      ms.persistCurrentScreenshot(function () {
         tc.attachBase64ImageToCard(cardId, ms.currentBase64Image, updateUploadProgress, cardWasCreated);
       });
-    } else {
-      $('#progress-bar-container').css('display', 'block');
-      ms.persistCurrentScreenshot();
-      tc.attachBase64ImageToCard(cardId, ms.currentBase64Image, updateUploadProgress, cardWasCreated);    
-    }  
+    });
   });
 });
 

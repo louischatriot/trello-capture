@@ -3,7 +3,8 @@
  * The needed API for a shape is:
  * - The constructor that creates and draw the transient shape
  * - updatePosition that redraws the shape when the mouse moves
- * - persistOnCanvas that draws the transient shape on the underlying canvas
+ * - persistOnCanvas that draws the transient shape on the underlying canvas.
+                     It takes a callback as argument to tell when work is done since some persistence functions will need to be async due to image loading
  * - hide that hides the shape (figures ...)
  */
  
@@ -48,11 +49,12 @@ Rectangle.prototype.updatePosition = function (top, left) {
 };
 
 // Persist this shape on the corresponding ModifiedScreenshot's canvas
-Rectangle.prototype.persistOnCanvas = function () {
+Rectangle.prototype.persistOnCanvas = function (cb) {
   var left = parseInt(this.$transient.css('left').replace(/px/, ""), 10) - (this.ms.canvasW * (1 - this.ms.scale) / this.ms.scale)
     , top = parseInt(this.$transient.css('top').replace(/px/, ""), 10) - (this.ms.canvasH * (1 - this.ms.scale) / this.ms.scale)
     , width = parseInt(this.$transient.css('width').replace(/px/, ""), 10)
     , height = parseInt(this.$transient.css('height').replace(/px/, ""), 10)
+    , callback = cb || function () {}
     ;
 
   this.ms.ctx.setLineWidth(6);
@@ -62,6 +64,8 @@ Rectangle.prototype.persistOnCanvas = function () {
   this.ms.ctx.shadowOffsetX = 1;
   this.ms.ctx.shadowOffsetY = 1;
   this.ms.ctx.stroke();
+  
+  return callback();
 };
 
 Rectangle.prototype.hide = function () {
@@ -163,7 +167,7 @@ Arrow.prototype.updatePosition = function (top, left) {
 };
 
 // Persist this arrow on the corresponding ModifiedScreenshot's canvas
-Arrow.prototype.persistOnCanvas = function () {
+Arrow.prototype.persistOnCanvas = function (cb) {
   var ol = (this.lastLeft + this.originLeft) / 2 - (this.ms.canvasW * (1 - this.ms.scale) / this.ms.scale)
     , ot = (this.lastTop + this.originTop) / 2 - (this.ms.canvasH * (1 - this.ms.scale) / this.ms.scale)
     , L = Math.sqrt(Math.pow(this.lastLeft - this.originLeft, 2) + Math.pow(this.lastTop - this.originTop, 2))
@@ -173,20 +177,23 @@ Arrow.prototype.persistOnCanvas = function () {
     , theta = Math.atan((this.lastTop - this.originTop) / (this.lastLeft - this.originLeft))
     , self = this
     , image = new Image()
+    , callback = cb || function () {}
     ;
 
   if (this.lastLeft < this.originLeft) {
     theta += Math.PI;
   }
 
-  this.ms.ctx.translate(ol, ot);
-  this.ms.ctx.rotate(theta);
-  
+  // All canvas transformations must be in the same callback to avoid interferences between canvas rotations and translations
   image.src = Arrow.arrowData;
   image.onload = function() {
+    self.ms.ctx.translate(ol, ot);
+    self.ms.ctx.rotate(theta);
     self.ms.ctx.drawImage(image, -L/2, -l/2, L, l);
     self.ms.ctx.rotate(-theta);
     self.ms.ctx.translate(-ol, -ot);
+    
+    return callback();
   }
 };
 
@@ -290,13 +297,18 @@ ModifiedScreenshot.prototype.initializeDrawingMode = function () {
 
 
 // Create the modified screenshot and transform it into a data url
-ModifiedScreenshot.prototype.persistCurrentScreenshot = function () {
-  this.drawnShapes.forEach(function (shape) {
-    shape.hide();
-    shape.persistOnCanvas();
-  });
+// Async since some persistence functions need to be async
+ModifiedScreenshot.prototype.persistCurrentScreenshot = function (cb) {
+  var callback = cb || function () {}
+    , self = this;
 
-  this.currentBase64Image = this.canvas.toDataURL("image/jpeg");
+  async.eachSeries(this, function (shape, cb) {
+    shape.hide();
+    shape.persistOnCanvas(cb);
+  }, function () {
+    self.currentBase64Image = self.canvas.toDataURL("image/jpeg");
+    return callback();
+  });
 };
 
 
