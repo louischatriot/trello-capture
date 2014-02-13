@@ -154,7 +154,7 @@ Arrow.prototype.updatePosition = function (top, left) {
   if (this.lastLeft < this.originLeft) {
     theta += 180;
   }
-    
+  
   this.$transient.css('height', l + 'px');
   this.$transient.css('width', L + 'px');
   this.$transient.css('top', tt + 'px');
@@ -162,21 +162,32 @@ Arrow.prototype.updatePosition = function (top, left) {
   this.$transient.css('-webkit-transform', 'rotate(' + theta + 'deg)');  
 };
 
-// Persist this shape on the corresponding ModifiedScreenshot's canvas
+// Persist this arrow on the corresponding ModifiedScreenshot's canvas
 Arrow.prototype.persistOnCanvas = function () {
-  var left = parseInt(this.$transient.css('left').replace(/px/, ""), 10) - (this.ms.canvasW * (1 - this.ms.scale) / this.ms.scale)
-    , top = parseInt(this.$transient.css('top').replace(/px/, ""), 10) - (this.ms.canvasH * (1 - this.ms.scale) / this.ms.scale)
-    , width = parseInt(this.$transient.css('width').replace(/px/, ""), 10)
-    , height = parseInt(this.$transient.css('height').replace(/px/, ""), 10)
+  var ol = (this.lastLeft + this.originLeft) / 2 - (this.ms.canvasW * (1 - this.ms.scale) / this.ms.scale)
+    , ot = (this.lastTop + this.originTop) / 2 - (this.ms.canvasH * (1 - this.ms.scale) / this.ms.scale)
+    , L = Math.sqrt(Math.pow(this.lastLeft - this.originLeft, 2) + Math.pow(this.lastTop - this.originTop, 2))
+    , l = L * Arrow.l0 / Arrow.L0
+    , tl = ol - (L / 2)
+    , tt = ot - (l / 2)
+    , theta = Math.atan((this.lastTop - this.originTop) / (this.lastLeft - this.originLeft))
+    , self = this
+    , image = new Image()
     ;
 
-  this.ms.ctx.setLineWidth(16);
-  this.ms.ctx.rect(left, top, width, height);
-  this.ms.ctx.strokeStyle = this.color;   // TODO: understand why the change in stroke color is system-wide
-  this.ms.ctx.shadowColor = '#666666';
-  this.ms.ctx.shadowOffsetX = 1;
-  this.ms.ctx.shadowOffsetY = 1;
-  this.ms.ctx.stroke();
+  if (this.lastLeft < this.originLeft) {
+    theta += Math.PI;
+  }
+
+  this.ms.ctx.translate(ol, ot);
+  this.ms.ctx.rotate(theta);
+  
+  image.src = Arrow.arrowData;
+  image.onload = function() {
+    self.ms.ctx.drawImage(image, -L/2, -l/2, L, l);
+    self.ms.ctx.rotate(-theta);
+    self.ms.ctx.translate(-ol, -ot);
+  }
 };
 
 Arrow.prototype.hide = function () {
@@ -296,9 +307,8 @@ ModifiedScreenshot.prototype.setAsBackground = function (base64Image) {
   this.currentBase64Image = base64Image;
   image.src = base64Image;
   image.onload = function() {
-    // TODO: Calculate non-scaling coordinates better than that
     self.ctx.drawImage(image, 0, 0, self.canvasW, self.canvasH);
-    // self.initializeDrawingMode();   // TODO: uncomment
+    self.initializeDrawingMode();   // TODO: uncomment
     $('body').trigger('trelloCapture.screenshotTaken');
   };
 };

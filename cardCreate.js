@@ -188,7 +188,7 @@ $leftPane.on('mouseout', function() {
 // Drawing board
 var ms = new ModifiedScreenshot();
 ms.initColorPicker();
-ms.initializeDrawingMode();   // TODO: remove, for testing only
+// ms.initializeDrawingMode();   // TODO: remove, for testing only
 
 $('#clear-board').on('click', function () {
   ms.clearAllDrawings();
@@ -316,9 +316,6 @@ $('#login-button').on('click', tryToLogIn);
 $('#login-box').on('keypress', function(evt) {
   if (evt.keyCode === 13) { tryToLogIn(); }
 });
-
-
-
 
 
 
