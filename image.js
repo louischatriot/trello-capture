@@ -23,7 +23,7 @@ function Rectangle (top, left, color, ms) {
   this.$transient.css('top', this.originTop + 'px');
   this.$transient.css('left', this.originLeft + 'px');
   this.$transient.css('border', this.color + ' solid 6px');
-  // this.$transient.css('box-shadow', '2px 2px 1px #666, -2px -2px 1px #666, -2px 2px 1px #666, 2px -2px 1px #666');
+  this.$transient.css('box-shadow', '2px 2px 1px #666, -2px -2px 1px #666, -2px 2px 1px #666, 2px -2px 1px #666');
 }
 
 // Called when the mouse position changes
@@ -57,6 +57,7 @@ Rectangle.prototype.persistOnCanvas = function (cb) {
     , callback = cb || function () {}
     ;
 
+  this.ms.ctx.beginPath();
   this.ms.ctx.setLineWidth(6);
   this.ms.ctx.rect(left, top, width, height);
   this.ms.ctx.strokeStyle = this.color;   // TODO: understand why the change in stroke color is system-wide
@@ -64,6 +65,7 @@ Rectangle.prototype.persistOnCanvas = function (cb) {
   this.ms.ctx.shadowOffsetX = 1;
   this.ms.ctx.shadowOffsetY = 1;
   this.ms.ctx.stroke();
+  this.ms.ctx.closePath();
   
   return callback();
 };
@@ -178,6 +180,7 @@ Arrow.prototype.persistOnCanvas = function (cb) {
     , self = this
     , image = new Image()
     , callback = cb || function () {}
+    , arrowData = this.$transient.css('background-image').substring(4, this.$transient.css('background-image').length - 1)
     ;
 
   if (this.lastLeft < this.originLeft) {
@@ -185,7 +188,7 @@ Arrow.prototype.persistOnCanvas = function (cb) {
   }
 
   // All canvas transformations must be in the same callback to avoid interferences between canvas rotations and translations
-  image.src = Arrow.arrowData;
+  image.src = arrowData;
   image.onload = function() {
     self.ms.ctx.translate(ol, ot);
     self.ms.ctx.rotate(theta);
