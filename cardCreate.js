@@ -191,7 +191,6 @@ ms.initColorPicker();
 // ms.initializeDrawingMode();   // TODO: remove, for testing only
 
 $('#clear-board').on('click', function () {
-  // ms.persistCurrentScreenshot();
   ms.clearAllDrawings();
 });
 

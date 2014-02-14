@@ -23,7 +23,7 @@ function Rectangle (top, left, color, ms) {
   this.$transient.css('top', this.originTop + 'px');
   this.$transient.css('left', this.originLeft + 'px');
   this.$transient.css('border', this.color + ' solid 6px');
-  this.$transient.css('box-shadow', '2px 2px 1px #666, -2px -2px 1px #666, -2px 2px 1px #666, 2px -2px 1px #666');
+  // this.$transient.css('box-shadow', '2px 2px 1px #666, -2px -2px 1px #666, -2px 2px 1px #666, 2px -2px 1px #666');
 }
 
 // Called when the mouse position changes
@@ -301,8 +301,8 @@ ModifiedScreenshot.prototype.initializeDrawingMode = function () {
 ModifiedScreenshot.prototype.persistCurrentScreenshot = function (cb) {
   var callback = cb || function () {}
     , self = this;
-
-  async.eachSeries(this, function (shape, cb) {
+    
+  async.eachSeries(this.drawnShapes, function (shape, cb) {
     shape.hide();
     shape.persistOnCanvas(cb);
   }, function () {
