@@ -248,25 +248,37 @@ ModifiedScreenshot.prototype.clearAllDrawings = function () {
 
 /**
  * Manage color picker
- * Still need to understand how to override the blue hue when changing an option
  */
 ModifiedScreenshot.prototype.initColorPicker = function () {
   var $color = $('#color')
     , colors = [ '#ffaa00', '#ff0000', '#00ffff' ]
+    , i = 0, $defaultPicker
     , self = this;
 
   colors.forEach(function(c) {
-    $color.append('<option value="' + c + '" style="background-color: ' + c + ';"></option>');
-  });
-
-  $color.on('change', function () {
-    self.currentColor = $('#color option:selected').val();
-    Arrow.changeColor(self.currentColor);
-    $color.css('background-color', self.currentColor);
+    var $picker = $('<div style="background-color: ' + c + ';"></div>');
+    $picker.css('left', (20 * i++) + 'px');
+  
+    $picker.on('mouseover', function() {
+      $picker.css('height', '34px');
+    });
+    
+    $picker.on('mouseout', function() {
+      $picker.css('height', '30px');
+    });
+  
+    $picker.on('click', function () {
+      self.currentColor = c;
+      Arrow.changeColor(self.currentColor);
+    });
+  
+    $color.append($picker);
+    
+    if (!$defaultPicker) { $defaultPicker = $picker; }
   });
   
   // Simulate a user picking the default color, orange
-  $color.trigger('change');
+  $defaultPicker.trigger('click');
 };
  
 
