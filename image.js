@@ -251,7 +251,7 @@ ModifiedScreenshot.prototype.clearAllDrawings = function () {
  */
 ModifiedScreenshot.prototype.initColorPicker = function () {
   var $color = $('#color')
-    , colors = [ '#ffaa00', '#ff0000', '#00ffff' ]
+    , colors = [ '#ffaa00', '#dbdb57', '#cb4d4d', '#34b27d', '#4d77cb', '#93c' ]
     , i = 0, $defaultPicker
     , self = this;
 
@@ -268,6 +268,8 @@ ModifiedScreenshot.prototype.initColorPicker = function () {
     });
   
     $picker.on('click', function () {
+      $('#color div').removeClass('selected');
+      $picker.addClass('selected');
       self.currentColor = c;
       Arrow.changeColor(self.currentColor);
     });

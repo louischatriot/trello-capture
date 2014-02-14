@@ -30,9 +30,10 @@
 }
 
 #color {
-  width: 70px;
+  width: 120px;
   height: 34px;
   position: relative;
+  margin-right: 20px;
 }
 
 #color div {
@@ -42,7 +43,13 @@
   cursor: pointer;
   position: absolute;
   bottom: 0px;
-  
+}
+
+#color .selected {
+  bottom: 0px;
+  z-index: 1000;
+  border: solid 2px rgb(68,68,136);
+  box-shadow: 1px 1px 1px rgba(68,68,136,0.3), -1px -1px 1px rgba(68,68,136,0.3), -1px 1px 1px rgba(68,68,136,0.3), 1px -1px 1px rgba(68,68,136,0.3)
 }
 
 #progress-bar-container {
