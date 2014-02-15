@@ -251,7 +251,7 @@ ModifiedScreenshot.prototype.clearAllDrawings = function () {
  */
 ModifiedScreenshot.prototype.initColorPicker = function () {
   var $color = $('#color')
-    , colors = [ '#ffaa00', '#dbdb57', '#cb4d4d', '#34b27d', '#4d77cb', '#93c' ]
+    , colors = [ '#ffaa00', '#dbdb57', '#cb4d4d', '#34b27d', '#4d77cb', '#9933cc' ]
     , i = 0, $defaultPicker
     , self = this;
 
@@ -260,11 +260,11 @@ ModifiedScreenshot.prototype.initColorPicker = function () {
     $picker.css('left', (20 * i++) + 'px');
   
     $picker.on('mouseover', function() {
-      $picker.css('height', '34px');
+      $picker.css('height', '38px');
     });
     
     $picker.on('mouseout', function() {
-      $picker.css('height', '30px');
+      $picker.css('height', '34px');
     });
   
     $picker.on('click', function () {
@@ -280,6 +280,33 @@ ModifiedScreenshot.prototype.initColorPicker = function () {
   });
   
   // Simulate a user picking the default color, orange
+  $defaultPicker.trigger('click');
+};
+
+
+/**
+ * Manage shape picker
+ */
+ModifiedScreenshot.prototype.initShapePicker = function () {
+  var shapes = ['rectangle', 'arrow']
+    , $shape = $('#shape')
+    , $picker, $defaultPicker
+    , self = this
+    ;
+  
+  shapes.forEach(function (shape) {
+  
+    $picker = $('<div class="picker" style="background-image:url(picker_' + shape + '.png)"></div>');
+    
+    $picker.on('click', function () {
+      self.updateSelectedShape(shape);
+    });
+    
+    $shape.append($picker);
+    
+    if (!$defaultPicker) { $defaultPicker = $picker; }    
+  });
+  
   $defaultPicker.trigger('click');
 };
  

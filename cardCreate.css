@@ -33,12 +33,12 @@
   width: 120px;
   height: 34px;
   position: relative;
-  margin-right: 20px;
+  margin-right: 50px;
 }
 
 #color div {
   display: inline-block;
-  height: 30px;
+  height: 34px;
   width: 20px;
   cursor: pointer;
   position: absolute;
@@ -50,6 +50,20 @@
   z-index: 1000;
   border: solid 2px rgb(68,68,136);
   box-shadow: 1px 1px 1px rgba(68,68,136,0.3), -1px -1px 1px rgba(68,68,136,0.3), -1px 1px 1px rgba(68,68,136,0.3), 1px -1px 1px rgba(68,68,136,0.3)
+}
+
+#shape {
+  width: 140px;
+  height: 34px;
+}
+
+#shape .picker {
+  width: 50px;
+  height: 34px;
+  background-color: #999;
+  display: inline-block;
+  margin-right: 8px;
+  cursor: pointer;
 }
 
 #progress-bar-container {
