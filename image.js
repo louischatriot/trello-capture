@@ -96,8 +96,8 @@ function Arrow (top, left, color, ms) {
 
 // Original parameters of the image
 Arrow.arrowImage = 'arrow.png'
-Arrow.L0 = 360;
-Arrow.l0 = 50;
+Arrow.L0 = 800;
+Arrow.l0 = 82;
 
 // The base64 image data for the arrow is a static member of Arrow
 Arrow.arrowData = null; 
@@ -290,15 +290,26 @@ ModifiedScreenshot.prototype.initColorPicker = function () {
 ModifiedScreenshot.prototype.initShapePicker = function () {
   var shapes = ['rectangle', 'arrow']
     , $shape = $('#shape')
-    , $picker, $defaultPicker
+    , $defaultPicker
     , self = this
     ;
   
   shapes.forEach(function (shape) {
-  
-    $picker = $('<div class="picker" style="background-image:url(picker_' + shape + '.png)"></div>');
+    var $picker = $('<div class="picker" style="background-image:url(picker_' + shape + '.png)"></div>');
     
+    $picker.on('mouseover', function() {
+      console.log('---');
+      console.log(shape);
+      $picker.css('background-color', '#ddd');
+    });
+    
+    $picker.on('mouseout', function() {
+      $picker.css('background-color', '#eee');
+    });
+
     $picker.on('click', function () {
+      $('#shape div').removeClass('selected');
+      $picker.addClass('selected');
       self.updateSelectedShape(shape);
     });
     

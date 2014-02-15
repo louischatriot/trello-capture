@@ -45,11 +45,11 @@
   bottom: 0px;
 }
 
-#color .selected {
+.selected {
   bottom: 0px;
   z-index: 1000;
   border: solid 2px rgb(68,68,136);
-  box-shadow: 1px 1px 1px rgba(68,68,136,0.3), -1px -1px 1px rgba(68,68,136,0.3), -1px 1px 1px rgba(68,68,136,0.3), 1px -1px 1px rgba(68,68,136,0.3)
+  box-shadow: 1px 1px 1px rgba(68,68,136,0.3), -1px -1px 1px rgba(68,68,136,0.3), -1px 1px 1px rgba(68,68,136,0.3), 1px -1px 1px rgba(68,68,136,0.3);
 }
 
 #shape {
@@ -60,10 +60,10 @@
 #shape .picker {
   width: 50px;
   height: 34px;
-  background-color: #999;
   display: inline-block;
   margin-right: 8px;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 #progress-bar-container {

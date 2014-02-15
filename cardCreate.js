@@ -189,7 +189,7 @@ $leftPane.on('mouseout', function() {
 var ms = new ModifiedScreenshot();
 ms.initColorPicker();
 ms.initShapePicker();
-ms.initializeDrawingMode();   // TODO: remove, for testing only
+// ms.initializeDrawingMode();   // TODO: remove, for testing only
 
 $('#clear-board').on('click', function () {
   ms.clearAllDrawings();
@@ -280,7 +280,7 @@ tc.getLoggedUsername(function (err) {
   if (tc.username) {
     getTrelloCredentialsAndInitialize();
   } else {
-    // $('#login').css('display', 'none');   // TODO: uncomment
+    $('#login').css('display', 'block');   // TODO: uncomment
   }
 });
 
