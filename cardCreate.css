@@ -8,7 +8,7 @@
   box-sizing: border-box;
   border-right: solid 1px black;
   transition: left 0.5s;
-  box-shadow: 2px 0px 5px #000;
+  box-shadow: 1px 0px 5px #000;
 }
 
 #top-pane {
@@ -18,7 +18,7 @@
   position: fixed;
   top: 0;
   right: 0;
-  box-shadow: 0px 2px 5px #000;
+  box-shadow: 0px 1px 5px #000;
 }
 
 #screenshot-pane {
@@ -48,7 +48,7 @@
 #shape .selected, #color .selected {
   bottom: 0px;
   z-index: 1000;
-  border: solid 2px rgb(68,68,136);
+  border: solid 1px rgb(68,68,136);
   box-shadow: 1px 1px 1px rgba(68,68,136,0.3), -1px -1px 1px rgba(68,68,136,0.3), -1px 1px 1px rgba(68,68,136,0.3), 1px -1px 1px rgba(68,68,136,0.3);
 }
 
