@@ -45,7 +45,7 @@
   bottom: 0px;
 }
 
-.selected {
+#shape .selected, #color .selected {
   bottom: 0px;
   z-index: 1000;
   border: solid 2px rgb(68,68,136);
