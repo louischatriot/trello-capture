@@ -4,3 +4,4 @@ Chrome extension that lets you take a screenshot of your web browser, draw arrow
 
 <a href="https://chrome.google.com/webstore/detail/trello-capture/kclmblojjeedhebmlokdjeiogppjkfih" target="_blank">Go get it from the Chrome Web Store</a>
 
+<img src="screenshots/screenshot1.png">
