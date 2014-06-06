@@ -4,6 +4,8 @@
 
   // TODO: manage multiple opened tab before screenshot send
   function buttonClicked() {
+  
+  
     chrome.tabs.captureVisibleTab(null, {}, function (image) {
       imageData = image;
      
