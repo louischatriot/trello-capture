@@ -3,35 +3,16 @@
   var imageData;
   var selectText;
 
-  function getSelected(){    
-    var t = '';
-    if(window.getSelection) {
-        t = window.getSelection();
-    } else if(document.getSelection) {
-        t = document.getSelection();
-    } else if(document.selection) {
-        t = document.selection.createRange().text;
-    }
-    return t;
-  }
-
-
   // TODO: manage multiple opened tab before screenshot send
   function buttonClicked() {
   
-    chrome.tabs.executeScript({
-      code: "window.getSelection().toString();"
-    }, function(selection) {
-      selectText = selection[0];
-    });
+  chrome.tabs.executeScript({
+    file: "getSelectedText.js"
+  }, function(selection) {      
+    selectText = selection[0];
+  });
 
-    // chrome.tabs.executeScript({
-    //   code: "window.getSelection().removeAllRanges();"
-    // }, function(selection) {
-    //   selectText = selection[0];
-    // });
-
-    chrome.tabs.captureVisibleTab(null, {}, function (image) {
+  chrome.tabs.captureVisibleTab(null, {}, function (image) {
       imageData = image;
      
       createdTabUrl = chrome.extension.getURL('cardCreate.html');
@@ -46,11 +27,7 @@
             tab = tabs[i];
           }
         }
-        chrome.tabs.executeScript((tab.index || 0) + 1, {
-          code: "window.getSelection().toString();"
-        }, function(selection) {
-          selectText = selection[0];
-        });
+        
         chrome.tabs.create({ url: createdTabUrl, index: (tab.index || 0) + 1 }, onTabCreated);
       });
     });    
