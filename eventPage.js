@@ -3,8 +3,8 @@
   var imageData;
   var selectText;
 
-  // TODO: manage multiple opened tab before screenshot send
-  function buttonClicked() {
+  // TODO: manage multiple opened tab before screenshot sen
+function buttonClicked() {
   
   chrome.tabs.executeScript({
     file: "getSelectedText.js"

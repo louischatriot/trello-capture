@@ -9,10 +9,5 @@
 	} else if(document.selection) {
 	    t = document.selection.createRange().text;
 	}
-	if (window.getSelection) {
-        window.getSelection().removeAllRanges();
-    } else if (document.selection) {
-        document.selection.empty();
-    }
 	return t;
 })()
