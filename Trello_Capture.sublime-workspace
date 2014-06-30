@@ -1,0 +1,970 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"respo",
+				"response"
+			],
+			[
+				"Arra",
+				"ArrayList"
+			],
+			[
+				"lent",
+				"length"
+			],
+			[
+				"len",
+				"length-1"
+			],
+			[
+				"String",
+				"StringBuffer"
+			],
+			[
+				"Strin",
+				"StringBuffer"
+			],
+			[
+				"target",
+				"target-numbers"
+			],
+			[
+				"nu",
+				"NUMBER"
+			],
+			[
+				"i",
+				"important"
+			],
+			[
+				"padding",
+				"padding-top"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "Searching 17 files for \"cardCreate.html\" (regex)\n\nC:\\Users\\Cristiano\\workspace\\Pessoal\\trello-capture\\eventPage.js:\n   10        imageData = image;\n   11       \n   12:       createdTabUrl = chrome.extension.getURL('cardCreate.html');\n   13        \n   14        chrome.tabs.query({ active: true }, function (tabs) {\n\nC:\\Users\\Cristiano\\workspace\\Pessoal\\trello-capture\\Trello Capture.htm:\n    1  \n    2: <!-- saved from url=(0067)chrome-extension://fgpbhcbjcgagjhdobnnlddonahnfbmih/cardCreate.html -->\n    3  <html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\n    4  <title>Trello Capture</title>\n\n2 matches across 2 files\n\n\nSearching 17 files for \"chrome.runtime.onMessage\" (regex)\n\nC:\\Users\\Cristiano\\workspace\\Pessoal\\trello-capture\\cardCreate.js:\n  319  \n  320  // When we receive an image\n  321: chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {\n  322    ms.setAsBackground(request.imageData);\n  323  });\n\n1 match in 1 file\n",
+			"settings":
+			{
+				"buffer_size": 991,
+				"line_ending": "Windows",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"contents": "/**\n * Main management interface\n */\n\nvar tc = new TrelloClient()\n  , chosenLabels = {}\n  , possibleLabels = [\"red\", \"orange\", \"yellow\", \"purple\", \"blue\", \"green\"]\n  , $leftPane = $('#left-pane')\n  , $topPane = $('#top-pane')\n  ;\n\n\n// Change a color's opacity, given that _oldColor is passed as rgb() or rgba() as is the case in jQuery\nfunction changeOpacity(_oldColor, opacity) {\n  var oldColor = _oldColor.split(',')\n    , newColor = 'rgba(';\n    \n  newColor += oldColor[0].split('(')[1] + ',' + oldColor[1] + ',' + oldColor[2].split(')')[0] + ',' + (opacity || 1) + ')';  \n  return newColor;\n}\n  \nfunction populateBoardsList(cb) {\n  var callback = cb || function() {};\n  \n  tc.getAllBoards(function(err) {\n    var options = \"\";\n\n    if (err) { return callback(err); }\n    \n    tc.openBoards.sort(function (a, b) { return a.name < b.name ? -1 : 1; }).forEach(function (board) {\n      options += '<option value=\"' + board.id + '\">' + board.name + '</option>';\n    });\n    \n    $('#boardsList').html(options);\n    \n    // Use remembered value if there is one\n    if (localStorage.currentBoardId) {\n      $('#boardsList option[value=\"' + localStorage.currentBoardId + '\"]').prop('selected', true);\n    }\n    \n    return callback(null);\n  });\n}\n\n\nfunction populateLabelNamesList(cb) {\n  var callback = cb || function() {}\n    , selectedBoardId = $('#boardsList option:selected').val()\n    ;\n\n  tc.getAllLabelsNames(selectedBoardId, function (err) {\n    if (err) { return callback(err); }\n\n    Object.keys(tc.currentLabels).forEach(function(color) {\n      $('.label-pickers div.' + color).html(tc.currentLabels[color] + \"&nbsp;\");   // Small hack ...\n    });\n    \n  });\n}\n\n\nfunction populateListsList(cb) {\n  var callback = cb || function() {}\n    , selectedBoardId = $('#boardsList option:selected').val()\n    ;\n    \n  tc.getAllCurrentLists(selectedBoardId, function (err) {\n    var options = \"\";\n\n    if (err) { return callback(err); }\n    \n    tc.currentLists.sort(function (a, b) { return a.name < b.name ? -1 : 1; }).forEach(function (list) {\n      options += '<option value=\"' + list.id + '\">' + list.name + '</option>';\n    });\n    \n    $('#listsList').html(options);\n    \n    // Use remembered value if there is one\n    if (localStorage.currentListId) {\n      $('#listsList option[value=\"' + localStorage.currentListId + '\"]').prop('selected', true);\n    }\n\n    return callback(null);\n  });\n}\n\n\nfunction getSelectedLabels() {\n  var labels = [];\n  $('.label-pickers div.selected').each(function(i, d){\n    $(d).attr('class').split(' ').forEach(function (clazz) {\n      if (clazz !== 'selected') { labels.push(clazz); }\n    });\n  })\n  return labels;\n}\n\n\n// Takes as input an XMLHttpRequestProgressEvent e\nfunction updateUploadProgress(e) {\n  var progress = Math.floor(100 * (e.position / e.totalSize));\n\n  $('#progress-bar').css('width', progress + '%');\n  \n  if (progress === 100) {\n    setTimeout(function () {\n      $('#cardWasCreated').css('display', 'block');\n    }, 1000);\n  }\n}\n\n\n// Give feedback to user that card was created and close page\nfunction cardWasCreated() {\n  console.log(\"Card is created, closing window\");\n  window.close();\n}\n\n\n// Validation. Quite custom but not a real issue here ...\n\n// Only validate text length. Wouldn't work if lower bound is greater than 1 of course but we're lucky here !\nfunction validateText(inputId, lowerBound, upperBound) {\n  return function() {\n    var $input = $(inputId)\n      , value = $input.val()\n      , $parentDiv = $input.parent()\n      , $errorMessage = $parentDiv.find('div.alert')\n      ;\n    \n    if (value.length >= lowerBound && value.length <= upperBound) {\n      $parentDiv.removeClass('has-error');\n      $errorMessage.css('display', 'none');\n      return true;\n    } else {\n      $parentDiv.addClass('has-error');  \n      $errorMessage.css('display', 'block');\n      return false;\n    }  \n  }\n}\n\nvar validateCardName = validateText('#cardName', 1, 16384);\n$('#cardName').on('keyup', validateCardName);\n\nvar validateCardDesc = validateText('#cardDesc', 0, 16384);\n$('#cardDesc').on('keyup', validateCardDesc);\n\n\n\n// =================================================\n// Initialization\n// =================================================\n\n// Panes sizes and left pane behaviour, plus canvas\nvar totalHeight = $('body').height()\n  , totalWidth = $('body').width()\n  , topPaneHeight = 50\n  , screenshotPaneHeight = totalHeight - topPaneHeight\n  , rightPanesWidth = Math.floor(totalWidth * screenshotPaneHeight / totalHeight)\n  , leftPaneWidth = Math.floor(0.2 * totalWidth)\n  , baseLeftPanePosition = Math.max(totalWidth - rightPanesWidth - leftPaneWidth, 20 - leftPaneWidth)\n  ;\n\n$topPane.css('width', rightPanesWidth + 'px');\n$topPane.css('height', topPaneHeight + 'px');\n$topPane.css('line-height', topPaneHeight + 'px');   // Vertically center contents on a single line\n$topPane.css('padding-left', (30 + leftPaneWidth - totalWidth + rightPanesWidth) + 'px');   // 30px from border of left pane when it's totally on screen\n\n$('#screenshot-pane').css('width', rightPanesWidth + 'px');\n$('#screenshot-pane').css('height', screenshotPaneHeight + 'px');\n\n// Show left pane until screenshot appears, then slide it to the left\n$leftPane.css('width', leftPaneWidth + 'px');\n$('body').on('trelloCapture.screenshotTaken', function () {\n  $leftPane.css('left', baseLeftPanePosition + 'px');\n});\n\n$leftPane.on('mouseover', function() {\n  $leftPane.css('left', '0');\n})\n\n$leftPane.on('mouseout', function() {\n  $leftPane.css('left', baseLeftPanePosition + 'px');\n})\n\n\n// Drawing board\nvar ms = new ModifiedScreenshot();\nms.initColorPicker();\nms.initShapePicker();\n// ms.initializeDrawingMode();   // TODO: remove, for testing only\n\n$('#clear-board').on('click', function () {\n  ms.clearAllDrawings();\n});\n\n\n\nwindow.ms = ms;   // TODO: remove, for testing only\n\n\n// Manage background-color behavior on click for labels\npossibleLabels.forEach(function(label) {\n  var $label = $('.' + label);\n  \n  // Initial state\n  $label.css('background-color', changeOpacity($label.css('background-color'), 0.35));\n\n  $label.on(\"click\", function () {\n    $label.toggleClass('selected');\n    if ($label.hasClass('selected')) {\n      $label.css('background-color', changeOpacity($label.css('background-color'), 1));\n    } else {\n      $label.css('background-color', changeOpacity($label.css('background-color'), 0.35));    \n    }\n  });\n});\n\n\n$('#boardsList').on('change', function() {\n  var selectedBoardId = $('#boardsList option:selected').val();\n\n  localStorage.currentBoardId = selectedBoardId;   // Remember this setting, user probably wants the same board all the time\n  populateListsList();\n  populateLabelNamesList();\n});\n\n$('#listsList').on('change', function() {\n  localStorage.currentListId = $('#listsList option:selected').val();   // Remember this setting, user probably wants the same list all the time\n});\n\n$('#on-top').on('change', function () {\n  localStorage.cardOnTop = $('#on-top').prop('checked');\n});\n\n$('#createCard').on('click', function () {\n  if (!ms.currentBase64Image) { return; }\n  if (!validateCardName() || !validateCardDesc()) { return; }\n  \n  var selectedListId = $('#listsList option:selected').val();\n  \n  // Create card\n  tc.createCardAtBottomOfCurrentList(selectedListId, $('#cardName').val(), $('#cardDesc').val(), getSelectedLabels(), function (err, cardId) {\n    async.waterfall([\n      function (cb) {\n        if ($('#on-top').prop('checked')) {\n          tc.putCardOnTopOfList(cardId, cb);\n        } else {\n          return cb();\n        }      \n      }\n    ], function () {\n      $('#progress-bar-container').css('display', 'block');\n      ms.persistCurrentScreenshot(function () {\n        tc.attachBase64ImageToCard(cardId, ms.currentBase64Image, updateUploadProgress, cardWasCreated);\n      });\n    });\n  });\n});\n\n// Initialization\nfunction initializeBoardsAndLists() {\n  populateBoardsList(function() {\n    $('#boardsList').trigger('change');\n  });\n}\n\nif (localStorage.cardOnTop) {\n  $('#on-top').prop('checked', true);\n}\n\n\n\n// ============================\n// Entry point\n// ============================\n\ntc.getLoggedUsername(function (err) {\n  if (tc.username) {\n    getTrelloCredentialsAndInitialize();\n  } else {\n    $('#login').css('display', 'block');   // TODO: uncomment\n  }\n});\n\n// Makes the assumption the user is logged in to Trello\nfunction getTrelloCredentialsAndInitialize (cb) {\n  var callback = cb || function () {};\n\n  tc.getLoggedUsername(function (err) {\n    tc.getApiCredentials(function (err) {\n      tc.getClientToken(function (err) {\n        initializeBoardsAndLists();\n      });\n    });\n  });\n}\n\nfunction tryToLogIn() {\n  $('#login div.alert-danger').css('display', 'none');\n  tc.logUserIn($('#login-email').val(), $('#login-password').val(), function (err, loggedIn) {\n    if (loggedIn) {\n      $('#login').css('display', 'none');\n      getTrelloCredentialsAndInitialize();\n    } else {\n      $('#login div.alert-danger').css('display', 'block');\n    }\n  });\n}\n\n\n$('#login-button').on('click', tryToLogIn);\n$('#login-box').on('keypress', function(evt) {\n  if (evt.keyCode === 13) { tryToLogIn(); }\n});\n\n\n// When we receive an image\nchrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {\n  ms.setAsBackground(request.imageData);\n  $(\"#cardName\").text(request.cardName);\n});\n",
+			"file": "cardCreate.js",
+			"file_size": 9715,
+			"file_write_time": 130483380303950151,
+			"settings":
+			{
+				"buffer_size": 9311,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "trelloClient.js",
+			"settings":
+			{
+				"buffer_size": 8475,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "cardCreate.html",
+			"settings":
+			{
+				"buffer_size": 3376,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "eventPage.js",
+			"settings":
+			{
+				"buffer_size": 2380,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "Packages/SublimeREPL/sublimerepl_build_system_hack.sublime-build",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+			[
+				"xml",
+				"Set Syntax: XML"
+			],
+			[
+				"pci",
+				"Package Control: Install Package"
+			],
+			[
+				"txt",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"sml",
+				"SublimeREPL: SML"
+			],
+			[
+				"mark",
+				"Set Syntax: Markdown"
+			],
+			[
+				"markdo",
+				"Set Syntax: Markdown"
+			],
+			[
+				"text",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"sql",
+				"Set Syntax: SQL"
+			],
+			[
+				"java",
+				"Set Syntax: Java"
+			],
+			[
+				"json",
+				"Set Syntax: JSON"
+			],
+			[
+				"markd",
+				"Set Syntax: Markdown GFM"
+			],
+			[
+				"md",
+				"Set Syntax: Markdown"
+			],
+			[
+				"preview",
+				"Markdown Preview: Github Flavored Markdown: Copy to Clipboard"
+			],
+			[
+				"prev",
+				"Markdown Preview: Github Flavored Markdown: Export HTML in Sublime Text"
+			],
+			[
+				"previ",
+				"Markdown Preview: Github Flavored Markdown: Preview in Browser"
+			],
+			[
+				"pcl",
+				"Package Control: List Packages"
+			],
+			[
+				"batc",
+				"Set Syntax: Batch File"
+			],
+			[
+				"scala",
+				"Set Syntax: Scala"
+			],
+			[
+				"loa",
+				"SublimeREPL: Load current file"
+			],
+			[
+				"load",
+				"SublimeREPL: Load current file"
+			],
+			[
+				"pcr",
+				"Package Control: Remove Package"
+			],
+			[
+				"repl",
+				"Preferences: LoadFileToRepl Settings – Default"
+			],
+			[
+				"sca",
+				"Set Syntax: Scala"
+			],
+			[
+				"pre",
+				"Markdown Preview: Python Markdown: Preview in Browser"
+			],
+			[
+				"markdown",
+				"MarkdownEditing: Add Missing Link Labels"
+			],
+			[
+				"markdowned",
+				"MarkdownEditing: Fix Underlined Headers"
+			],
+			[
+				"prwview",
+				"Markdown Preview: Python Markdown: Preview in Browser"
+			],
+			[
+				"mp",
+				"Markdown Preview: Python Markdown: Preview in Browser"
+			],
+			[
+				"markdownpre",
+				"Markdown Preview: Python Markdown: Preview in Browser"
+			],
+			[
+				"html",
+				"Set Syntax: HTML"
+			],
+			[
+				"php",
+				"Set Syntax: PHP"
+			],
+			[
+				"",
+				"Code Folding: Fold Tag Attributes"
+			],
+			[
+				"ml",
+				"SublimeREPL: Lua"
+			],
+			[
+				"PCR",
+				"Package Control: Remove Package"
+			],
+			[
+				"PCI",
+				"Package Control: Install Package"
+			],
+			[
+				"open",
+				"View: Toggle Open Files in Side Bar"
+			],
+			[
+				"css",
+				"Set Syntax: CSS"
+			],
+			[
+				"XML",
+				"Set Syntax: XML"
+			]
+		],
+		"width": 576.0
+	},
+	"console":
+	{
+		"height": 212.0,
+		"history":
+		[
+			"open_project",
+			"find()",
+			"find",
+			"reg_replace",
+			"reg_replace(\"formatting_XML\");",
+			"reg_replace(\"formatting_XML\")",
+			"reg_replace({\"replacements\": [\"formatting_XML\"]})",
+			"reg_replace",
+			"markdown_preview",
+			"command: new_window",
+			"command: new_window()",
+			"new_window()",
+			"new_window",
+			"toggle_comment",
+			"open_project",
+			"open",
+			"Google",
+			"%s",
+			"import urllib2,os; pf='Package Control.sublime-package'; ipp=sublime.installed_packages_path(); os.makedirs(ipp) if not os.path.exists(ipp) else None; urllib2.install_opener(urllib2.build_opener(urllib2.ProxyHandler())); open(os.path.join(ipp,pf),'wb').write(urllib2.urlopen('http://sublime.wbond.net/'+pf.replace(' ','%20')).read()); print('Please restart Sublime Text to finish installation')"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Users/Cristiano/Desktop/TrackCondition.xsd",
+		"/C/Users/Cristiano/AppData/Local/Temp/Rar$DIa0.767/MANIFEST.MF",
+		"/C/Program Files (x86)/Git/etc/gitconfig",
+		"/C/Program Files (x86)/Git/etc/gitattributes",
+		"/C/DevUtils/cmder/Cmder.bat",
+		"/C/DevUtils/cmder/Readme.md",
+		"/C/DevUtils/cmder/vendor/init.bat",
+		"/C/DevUtils/cmder/vendor/msysgit/etc/gitattributes",
+		"/C/DevUtils/cmder/vendor/msysgit/etc/gitconfig",
+		"/C/DevUtils/cmder/vendor/msysgit/git-cmd.bat",
+		"/C/DevUtils/cmder/vendor/msysgit/git-bash.bat",
+		"/C/DevUtils/cmder/config/settings",
+		"/C/DevUtils/cmder/config/ConEmu.xml",
+		"/C/DevUtils/cmder/vendor/msysgit/README.portable",
+		"/C/DevUtils/cmder/vendor/msysgit/ReleaseNotes.rtf",
+		"/C/Users/Cristiano/.ssh/config",
+		"/C/Users/Cristiano/.ssh/environment",
+		"/C/Users/Cristiano/.ssh/id_rsa",
+		"/C/Users/Cristiano/Dropbox/Kaori/ETG_web/Etg_Web.txt",
+		"/C/Users/Cristiano/Desktop/Test.txt",
+		"/C/DevUtils/cmder/config/aliases",
+		"/C/Users/Cristiano/CflexWorkspaces/MP_6.1.10/05-modules/cflex-mp/cflex-mp-core/src/main/resources/mpbase/com/cflex/mp/resources/dictionary.xml",
+		"/C/Users/Cristiano/Desktop/20140603 AC702s has no train sheet information/rescue.main.2014-06-03 15-58-49_30139.dat",
+		"/C/Users/Cristiano/Desktop/20140603 AC702s has no train sheet information/rescue.machine.2014-06-03 15-58-49_30139.tmp",
+		"/C/DevUtils/WSPlugin_7.1.0-SNAPSHOT/XMLS/1.TrainSchedule.xml",
+		"/C/Users/Cristiano/AppData/Roaming/Sublime Text 3/Packages/User/Default.sublime-commands",
+		"/C/Users/Cristiano/AppData/Roaming/Sublime Text 3/Packages/RegReplace/Default.sublime-commands",
+		"/C/Users/Cristiano/AppData/Roaming/Sublime Text 3/Packages/User/Default (Windows).sublime-keymap",
+		"/C/Users/Cristiano/AppData/Roaming/Sublime Text 3/Packages/User/reg_replace.sublime-settings",
+		"/C/Users/CRISTI~1/AppData/Local/Temp/Rar$DRa0.720/RegReplace-master/readme.md",
+		"/C/Users/Cristiano/AppData/Roaming/Sublime Text 3/Packages/RegReplace/reg_replace.sublime-settings",
+		"/C/Users/Cristiano/Desktop/PD112n.xml",
+		"/C/Users/Cristiano/Desktop/Code review",
+		"/C/Users/Cristiano/Desktop/AC111s.xml",
+		"/C/DevUtils/jboss-4.2.3.GA/server/default/deploy/jboss-web.deployer/server.xml",
+		"/C/DevUtils/jboss-4.2.3.GA/server/default/conf/jboss-log4j.xml",
+		"/C/Users/Cristiano/.m2/settings.xml",
+		"/C/DevUtils/jboss-4.2.3.GA/server/default/deploy/cflex-apps.war/cflex-mp-client.jnlp",
+		"/C/DevUtils/jboss-4.2.3.GA/server/default/deploy/oracle-ds.xml",
+		"/C/Users/Cristiano/Desktop/teste.csv",
+		"/C/Users/Cristiano/workspace/RioTinto_AU/05-modules/cflex-mp/cflex-mp-executer/launchers/en_au/EN_AU_MPServer.launch",
+		"/C/Users/Cristiano/workspace/RioTinto_AU/05-modules/cflex-mp/cflex-mp-executer/launchers/en_au/EN_AU_MPClient.launch",
+		"/C/Users/Cristiano/workspace/RioTinto_AU/05-modules/cflex-mp/cflex-mp-executer/launchers/en_au/EN_AU_DB.launch",
+		"/C/Users/Cristiano/AppData/Roaming/Subversion/auth/svn.ssh/c01a8691d672007298c6004d823cc9d2",
+		"/C/Users/Cristiano/AppData/Roaming/Subversion/auth/svn.username/c01a8691d672007298c6004d823cc9d2",
+		"/C/Users/Cristiano/AppData/Roaming/Subversion/config",
+		"/C/Users/Cristiano/workspace/IdeaWorkspace/05-modules/cflex-mp/cflex-mp.iml",
+		"/C/Users/Cristiano/workspace/RioTinto_AU/05-modules/cflex-mp/cflex-mp-executer/launchers/en_au/EN_AU_MPInABox.launch",
+		"/C/DevUtils/WSPlugin_7.1.0-SNAPSHOT/XMLS/5.TrainStep2.xml",
+		"/C/DevUtils/apache-maven-3.2.1/bin/mvn.bat",
+		"/C/DevUtils/apache-maven-2.2.1/bin/mvn.bat",
+		"/C/Users/Cristiano/workspace/spring-framework/gradle.properties",
+		"/C/Users/Cristiano/workspace/spring-framework/import-into-eclipse.bat",
+		"/C/Users/Cristiano/.gradle/gradle.properties",
+		"/C/Users/Cristiano/Desktop/C-small-practice.in",
+		"/C/Users/Cristiano/workspace/spring-framework/gradlew.bat",
+		"/C/Users/Cristiano/.m2/settings_Old.xml",
+		"/C/Users/Cristiano/workspace/spring-framework/settings.gradle",
+		"/C/Users/Cristiano/Desktop/advancedsettings.xml",
+		"/C/Users/Cristiano/workspace/RioTinto_AU/05-modules/cflex-mp/cflex-mp-executer/licenses/licenseASIS.ini",
+		"/C/Users/Cristiano/workspace/RioTinto_AU/05-modules/cflex-mp/cflex-mp-base/src/main/resources/mpbase/com/cflex/mp/basicos/clientes/resources/RIOTINTO/ScriptOracleTCA.sql",
+		"/C/Users/Cristiano/workspace/RioTinto_AU/05-modules/cflex-mp/cflex-mp-repository/src/main/resources/mpserver/com/cflex/mp/trainsServer/dbase/resources/scriptOracle.sql",
+		"/C/Program Files (x86)/sbt/bin/sbtconfig.txt",
+		"/C/Users/Cristiano/.gitconfig",
+		"/C/Users/Cristiano/CflexWorkspaces/MP_6.1.10/Testes/.gitignore",
+		"/C/Users/Cristiano/Desktop/XMLs/05_Step.xml",
+		"/C/Users/Cristiano/Desktop/XMLs/06_Step.xml",
+		"/C/Users/Cristiano/Desktop/XMLs/04_Step.xml",
+		"/C/Users/Cristiano/Desktop/XMLs/03_Step.xml",
+		"/C/Users/Cristiano/Desktop/XMLs/02_Step.xml",
+		"/C/Users/Cristiano/Desktop/XMLs/01_TrainSchedule.xml",
+		"/C/DevUtils/WSPlugin_7.1.0-SNAPSHOT/1.TrainSchedule.xml",
+		"/C/Users/Cristiano/Desktop/BACKUP_USERS_AND_PROFILES_20140404124640.txt.sql",
+		"/C/Users/Cristiano/Desktop/RepresentacaoGraficaBlocoUtilitario.java.patch",
+		"/C/Users/Cristiano/Desktop/Changes To TrackBlock.md",
+		"/C/Users/Cristiano/Desktop/cmder/config/settings",
+		"/C/DevUtils/cmder/Version - 1.1",
+		"/C/DevUtils/cmder/saZilla",
+		"/C/Users/Cristiano/workspace/RioTinto_AU/05-modules/cflex-mp/cflex-mp-executer/launchers/LicenseFile.launch",
+		"/C/DevUtils/Rescues/Atividade criada por mensagem sem texto - created by message/rescue.machine.2013-06-16 20-13-59_25811.tmp",
+		"/C/Users/Cristiano/workspace/RioTinto_AU/cflex-ws-external-integration-sim/target/cflex-ws-external-integration-sim/config.properties",
+		"/C/DevUtils/WSPlugin_7.1.0-SNAPSHOT/3.TrainSheet.xml",
+		"/C/Users/Cristiano/AppData/Roaming/Sublime Text 3/Packages/Markdown Preview/MarkdownPreview.sublime-settings",
+		"/C/Users/Cristiano/AppData/Roaming/Sublime Text 3/Packages/User/MarkdownPreview.sublime-settings",
+		"/C/Users/Cristiano/AppData/Roaming/Sublime Text 3/Packages/Default/Default (Windows).sublime-keymap",
+		"/C/Users/Cristiano/CflexWorkspaces/MP_6.1.10/05-modules/cflex-mp/cflex-mp-client/target/pmd.xml",
+		"/C/Users/Cristiano/workspace/RioTinto_AU/cflex-ws-external-integration-sim/target/cflex-ws-external-integration-sim/RestrictionOnPropagationV1/RestrictionOnPropagationV1-16-19-46_23-02-14.xml",
+		"/C/Users/Cristiano/Desktop/wp-config.php",
+		"/C/Users/Cristiano/workspace/RioTinto_AU/cflex-ws-external-integration/src/main/wsdl/restrictionOnPropagationV1.xsd",
+		"/C/Users/Cristiano/workspace/RioTinto_AU/cflex-ws-external-integration/src/main/wsdl/Restriction.xsd",
+		"/C/Users/Cristiano/Dropbox/Documentos/CVs/I am a Senior Java developer.txt",
+		"/C/Users/Cristiano/Desktop/cflex-mp-client.jnlp",
+		"/C/Users/Cristiano/CflexWorkspaces/MP_6.1.10/05-modules/cflex-mp/cflex-mp-executer/configuracaoTrains.ini",
+		"/C/Users/Cristiano/Desktop/TCA.md",
+		"/C/Users/Cristiano/workspace/RioTinto_AU/05-modules/cflex-mp/cflex-mp-executer/configuracaoTrains.ini",
+		"/C/DevUtils/WSPlugin_7.1.0-SNAPSHOT/XMLS/Note.xml",
+		"/C/Users/Cristiano/workspace/RioTinto_AU/MP_Connector/application.properties",
+		"/C/Users/Cristiano/Desktop/MP_Server-6.1.10.28956_RIOTINTO/configuracaoTrains.ini",
+		"/C/Users/Cristiano/Desktop/cflex-mp-client-TST.jnlp",
+		"/C/Users/Cristiano/Desktop/MP_Client-6.1.10.28956_RIOTINTO/cflex-mp-client.jnlp",
+		"/C/Users/Cristiano/workspace/RioTinto_AU/05-modules/cflex-mp/cflex-mp-core/src/main/resources/mpbase/com/cflex/mp/resources/dictionary.xml",
+		"/C/Users/Cristiano/Dropbox/scala/sort.scala",
+		"/C/Users/Cristiano/Dropbox/scala/fibonacci.scala",
+		"/C/Users/Cristiano/Dropbox/scala/FibList.scala",
+		"/C/DevUtils/WSPlugin_7.1.0-SNAPSHOT/XMLS/TrainTie.xml",
+		"/C/Users/Cristiano/Dropbox/scala/fibDec.scala",
+		"/C/Users/Cristiano/Dropbox/scala/test2.scala",
+		"/C/Users/Cristiano/Dropbox/scala/test.scala",
+		"/C/Users/Cristiano/AppData/Roaming/Sublime Text 3/Packages/User/SublimeREPL.sublime-settings",
+		"/C/Users/Cristiano/AppData/Roaming/Sublime Text 3/Packages/LoadFileToRepl/LoadFileToRepl.sublime-settings",
+		"/C/Users/Cristiano/Dropbox/scala/fibDec",
+		"/C/Users/Cristiano/Dropbox/whatToSay5secondsBeforeAMeeting.txt",
+		"/C/DevUtils/Eclipse_Scala/eclipse.ini",
+		"/C/Users/Cristiano/Desktop/20140131/LogMPServerTest080633.log",
+		"/C/Users/Cristiano/Desktop/20140131/LogMPServerTest081240.log",
+		"/C/Users/Cristiano/Desktop/20140131/LogMPServerTest081700.log",
+		"/C/Users/Cristiano/Desktop/20140131/LogMPServerTest081708.log",
+		"/C/Users/Cristiano/Desktop/20140131/LogMPServerTest082600.log",
+		"/C/Users/Cristiano/Desktop/20140131/LogMPServerTest082755.log",
+		"/C/Users/Cristiano/Desktop/20140131/LogMPServerTest082916.log",
+		"/C/Users/Cristiano/Desktop/20140131/LogMPServerTest080200.log",
+		"/C/Users/Cristiano/Desktop/20140131/LogMPServerTest080201.log",
+		"/C/Users/Cristiano/Desktop/20140131/LogMPServerTest080328.log",
+		"/C/Users/Cristiano/Desktop/20140131/20580@AUPERL00900_LogMPServerTest081553.log",
+		"/C/Users/Cristiano/Desktop/20140131/21656@AUPERL00900_LogMPServerTest081258.log",
+		"/C/Users/Cristiano/Desktop/20140131/25532@AUPERL00900_LogMPServerTest130448.log",
+		"/C/Users/Cristiano/Desktop/20140131/31024@AUPERL00900_LogMPServerDEV172546.log",
+		"/C/Users/Cristiano/Desktop/20140131/4896@AUPERL00900_LogMPServerTest173208.log"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 90.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"tryToLogIn",
+			"getTrelloCredentialsAndInitialize",
+			"initializeBoardsAndLists",
+			"populateBoardsList",
+			"ms",
+			"chrome.runtime.onMessage",
+			"cardCreate.html",
+			"ghostCards",
+			"ghostcards",
+			"proxy",
+			"\"\"",
+			"DD226s",
+			"\"\"",
+			"\"<",
+			">\"",
+			"\"<",
+			"\"\"",
+			"DD226s",
+			"DD",
+			"DD2",
+			"DD226",
+			"DD226s",
+			">\"",
+			"\"<",
+			"\"\"",
+			"Data from YC660\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ns0:Message xmlns:ns0=\"http://www.cflex.com.br/TrainSchedule\" version=\"1.0\"><ID>16968505</ID><OriginID>TS73019000GENERATE_SCHEDULE</OriginID><TrainSchedule><RecordDate>2014-03-28T17:33:00+08:00</RecordDate><DepartureTime>2014-03-28T07:18:00+08:00</DepartureTime><PlannedEndTime>2014-03-28T07:18:00+08:00</PlannedEndTime><TrainID>611702</TrainID><TrainName>YC660n</TrainName><TrainServOrder>-1</TrainServOrder><OriginSegment>YANDI LD</OriginSegment><DestinationSegment>CD2C</DestinationSegment><Route><Segment segmentId=\"YANDI LD\" currentSegmentPrg=\"1\" resourceId=\"YANDI YARD 233T\"/><Segment segmentId=\"CD2C\" currentSegmentPrg=\"2\" resourceId=\"CL 1.0 915T\"/></Route><TrainDependency trainID=\"611701\" delay=\"195\"/></TrainSchedule></ns0:Message>\n",
+			"\"\"",
+			"\n\"\"",
+			"\"\"",
+			" ",
+			"-",
+			"https",
+			"ssl",
+			"SSLEngine",
+			"( \\d+.\\d+,\\d+)|( \\d+,\\d+)",
+			" 2.542,51",
+			"( \\d+.\\d+,\\d+)|( \\d+,\\d+)",
+			" 2.542,51",
+			"( \\d+.\\d+,\\d+)|( \\d+,\\d+)",
+			"( \\d+.\\d+,\\d+)",
+			"(^\\d\\d)",
+			"^\\d\\d",
+			"\n",
+			"make of",
+			"DXX",
+			"\n",
+			"// ",
+			"GRADLE_OPTS",
+			"is already*running",
+			"is already",
+			"is already running",
+			"EDIT_MOVEMENT_TO_TRACK_",
+			"EDIT_MOVEMENT_TO_TRACK_1",
+			"VK_",
+			"5",
+			"EDIT_MOVEMENT_TO_TRACK_8",
+			"5",
+			"8",
+			"7",
+			"6",
+			"5",
+			"left",
+			"100001",
+			"SV_TCA_",
+			"SV_TCA_PERSONNEL",
+			"2014-04-09",
+			"auto",
+			"kilometre",
+			"km",
+			"new TrackBlock(),\n				new ConnectionBlock()",
+			"new TrackBlock(),\n				new ConnectionBlock());",
+			"new TrackBlock(),",
+			"new TrackBlock(),\n				new ConnectionBlock());",
+			"extracttrac",
+			"oper2",
+			"log",
+			"extractTrackFromKmLine",
+			"Editar",
+			"limite",
+			"inicio",
+			"getclo",
+			"tree",
+			"iterateTree",
+			"tree",
+			"Tree",
+			"tree",
+			"put",
+			"peak",
+			"leafs",
+			"node",
+			"words.length-1",
+			"i",
+			"SHOW_LOG_IN_CONSOLE",
+			"Track Block",
+			", ",
+			"EMU 4",
+			"exe",
+			"<USUARIO>",
+			"1",
+			", ",
+			"238",
+			"241",
+			"Notes",
+			"RO N NET-NWT 1 km 247.40",
+			"-SNAPSHOT",
+			"this.condition",
+			"LinhaFe",
+			"TABLE SESSION",
+			" , ",
+			"SV_REASON",
+			"-:END CREATE TABLE SESSION",
+			"sv_road",
+			"SV_ROAD",
+			"PK_ROAD",
+			", \\S*\\s*\\S*\\);",
+			".append(",
+			"'",
+			"			",
+			"				",
+			" 	",
+			"					",
+			"60",
+			"ID",
+			"TCA",
+			"TCA_ID",
+			"sv_track_condition",
+			"NUMBER",
+			"Deve"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+			"\"",
+			"<",
+			">",
+			"<",
+			"\"",
+			">",
+			"<",
+			"\"",
+			"",
+			";$1$2",
+			",$1$2",
+			",$1|$2",
+			",$1 ",
+			"$1, ",
+			",",
+			"^\\d\\d,",
+			" ",
+			"",
+			"100002",
+			"2014-04-22",
+			"null, null",
+			"null, null);",
+			"\\n",
+			"MP",
+			" ,\\n",
+			"= ? ,\\n",
+			"",
+			")",
+			" ",
+			"",
+			"**deve**",
+			"/*/*deve/*/*",
+			"**deve**",
+			"",
+			"*deve*",
+			"_deve_",
+			"Presenting Demos",
+			"Product deploy",
+			"Product revalidation thru customer feedback",
+			"Developing new features to Movement Planner Software",
+			"Product deploy",
+			"On client support",
+			"On site product deploy",
+			"internal test team support",
+			"internal team support (junior members)",
+			"Risk assessment",
+			"Defining software architecture",
+			"Technical specification",
+			"Gathering of user feedback and features improvements",
+			"Software Development",
+			"Developing Proof of concepts",
+			"Defining software architecture",
+			"Installing Movement Planner Software on Client environment",
+			"Developing new features to Movement Planner Software",
+			"Defining estimates for the scope to be worked on",
+			"Gathering of software requirements",
+			"Writing of technical documents",
+			"Client suppot",
+			"",
+			"localhost",
+			"'HORIZONTAL', 10",
+			"mpclient.com.cflex.mp.painelGrafico.GraficoDeTrem\\n",
+			"",
+			"\\t VALUES",
+			"/\\n",
+			"",
+			"'48,60,-22,36,4,8,24,-48'",
+			"/\\n",
+			" ",
+			"",
+			".",
+			"xs:use",
+			"",
+			"</complexType>\\n",
+			"",
+			"_",
+			" = ",
+			"= ",
+			"",
+			"ETG_FOLDER",
+			"\\n",
+			"",
+			"sv_Planejamento_id = 1",
+			"1",
+			"",
+			"ValidateNoteXML",
+			"TrainTie",
+			"Note",
+			"",
+			"type=\"xs:",
+			"</xs:",
+			"<xs:",
+			"</xs:",
+			"<xs:",
+			"</xs:",
+			"<xs:"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 991,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										215,
+										230
+									],
+									[
+										481,
+										496
+									],
+									[
+										834,
+										858
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								863,
+								863
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 2,
+							"result_base_dir": "",
+							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 221.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "cardCreate.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9311,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8176,
+								8176
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 129.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "trelloClient.js",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 8475,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2730.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "cardCreate.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3376,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								775,
+								785
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 130.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "eventPage.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2380,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1785,
+								1785
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 390.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 21.0
+	},
+	"input":
+	{
+		"height": 29.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": false,
+	"output.exec":
+	{
+		"height": 88.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.markdown":
+	{
+		"height": 88.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 88.0
+	},
+	"project": "Trello_Capture.sublime-project",
+	"replace":
+	{
+		"height": 38.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"notetype",
+				"C:\\Users\\Cristiano\\Desktop\\NoteTypes.sql"
+			],
+			[
+				"de",
+				"DECLARE"
+			],
+			[
+				"",
+				"[ERROR] Schema descriptor {http://schemas.xmlsoap."
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+			[
+				"",
+				"C:\\DevUtils\\Koan.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 242.0,
+		"selected_items":
+		[
+			[
+				"table",
+				"### Tables\n"
+			]
+		],
+		"width": 392.0
+	},
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 183.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

@@ -316,8 +316,8 @@ $('#login-box').on('keypress', function(evt) {
 });
 
 
-
 // When we receive an image
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   ms.setAsBackground(request.imageData);
+  $("#cardName").val(request.cardName);
 });
