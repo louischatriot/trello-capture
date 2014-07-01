@@ -5,32 +5,38 @@
 
   // TODO: manage multiple opened tab before screenshot sen
 function buttonClicked() {
-  
+
+  // Gets selected text
   chrome.tabs.executeScript({
-    file: "getSelectedText.js"
+    code: "window.getSelection().toString()"
   }, function(selection) {      
     selectText = selection[0];
   });
 
-  chrome.tabs.captureVisibleTab(null, {}, function (image) {
-      imageData = image;
-     
-      createdTabUrl = chrome.extension.getURL('cardCreate.html');
-      
-      chrome.tabs.query({ active: true }, function (tabs) {
-        var i, tab;
-
-        // Only select the current active tab, not any background tab or dev tools
-        for (i = 0; i < tabs.length; i += 1) {
-          // TODO: more robust way to check if current tab is a page from this extension (either when I get a static extension id or with a flag)
-          if (tabs[i].url.match(/^http/) || tabs[i].url.match(/^chrome-extension.*\/cardCreate\.html$/)) {
-            tab = tabs[i];
-          }
-        }
+  // DeSelect text before getting image from that page
+  chrome.tabs.executeScript({
+      code: "window.getSelection().empty();"
+  }, function(selection) {
+    chrome.tabs.captureVisibleTab(null, {}, function (image) {
+        imageData = image;
+       
+        createdTabUrl = chrome.extension.getURL('cardCreate.html');
         
-        chrome.tabs.create({ url: createdTabUrl, index: (tab.index || 0) + 1 }, onTabCreated);
+        chrome.tabs.query({ active: true }, function (tabs) {
+          var i, tab;
+
+          // Only select the current active tab, not any background tab or dev tools
+          for (i = 0; i < tabs.length; i += 1) {
+            // TODO: more robust way to check if current tab is a page from this extension (either when I get a static extension id or with a flag)
+            if (tabs[i].url.match(/^http/) || tabs[i].url.match(/^chrome-extension.*\/cardCreate\.html$/)) {
+              tab = tabs[i];
+            }
+          }
+          
+          chrome.tabs.create({ url: createdTabUrl, index: (tab.index || 0) + 1 }, onTabCreated);
+        });
       });
-    });    
+    });     
   }
 
   // TODO: more robust way to send image data to page ?
