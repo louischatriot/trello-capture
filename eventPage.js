@@ -45,9 +45,6 @@ function buttonClicked() {
       chrome.runtime.sendMessage({ imageData: imageData, cardName: selectText }, function(response) {
         // Callback does nothing
       });
-      chrome.runtime.sendMessage({ imageData: imageData, cardName: selectText }, function(response) {
-        // Callback does nothing
-      });
     }, 1000);
         
     var views = chrome.extension.getViews();

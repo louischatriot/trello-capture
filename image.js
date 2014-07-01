@@ -379,4 +379,3 @@ ModifiedScreenshot.prototype.setAsBackground = function (base64Image) {
     $('body').trigger('trelloCapture.screenshotTaken');
   };
 };
-
