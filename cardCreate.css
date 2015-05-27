@@ -1,4 +1,5 @@
 #left-pane {
+  overflow-y:auto;
   background-color: #eee;
   height: 100%;
   position: fixed;
