@@ -6,3 +6,8 @@ Chrome extension that lets you take a screenshot of your web browser, draw arrow
 
 
 <img src="screenshots/screenshot1.png">
+
+
+## License 
+
+See [License](LICENSE)
