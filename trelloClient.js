@@ -121,11 +121,8 @@ TrelloClient.prototype.getAllOrganizations = function (cb) {
     var arrayLength = data.length;
     self.organizations = {}
     for (var i = 0; i < arrayLength; i++) {
-      self.organizations[data[i]["id"]] = data[i]["displayName"]
+      self.organizations[data[i]["id"]] = data[i]
     }
-
-    
-    console.log(self.organizations);
     return callback(null);
   }).fail(function() {
     return callback("Unauthorized access");

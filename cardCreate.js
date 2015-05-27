@@ -28,7 +28,12 @@ function populateBoardsList(cb) {
       if (err) { return callback(err); }
 
       tc.openBoards.sort(function (a, b) { return a.name < b.name ? -1 : 1; }).forEach(function (board) {
-        options += '<option value="' + board.id + '">' + board.name + '</option>';
+        options += '<option value="' + board.id + '">' + board.name;
+        if (board.idOrganization) {
+          options += ' (' + tc.organizations[board.idOrganization]["displayName"] + ')';
+        }
+
+         options += '</option>';
       });
 
       $('#boardsList').html(options);
