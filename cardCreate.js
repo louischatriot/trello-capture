@@ -98,7 +98,7 @@ function getSelectedLabels() {
 
 // Takes as input an XMLHttpRequestProgressEvent e
 function updateUploadProgress(e) {
-  var progress = Math.floor(100 * (e.position / e.totalSize));
+  var progress = Math.floor(100 * (e.loaded / e.total));
 
   $('#progress-bar').css('width', progress + '%');
   
