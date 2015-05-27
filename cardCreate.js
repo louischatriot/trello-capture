@@ -21,25 +21,27 @@ function changeOpacity(_oldColor, opacity) {
   
 function populateBoardsList(cb) {
   var callback = cb || function() {};
-  
-  tc.getAllBoards(function(err) {
-    var options = "";
+  tc.getAllOrganizations(function(err) {
+    tc.getAllBoards(function(err) {
+      var options = "";
 
-    if (err) { return callback(err); }
-    
-    tc.openBoards.sort(function (a, b) { return a.name < b.name ? -1 : 1; }).forEach(function (board) {
-      options += '<option value="' + board.id + '">' + board.name + '</option>';
+      if (err) { return callback(err); }
+
+      tc.openBoards.sort(function (a, b) { return a.name < b.name ? -1 : 1; }).forEach(function (board) {
+        options += '<option value="' + board.id + '">' + board.name + '</option>';
+      });
+
+      $('#boardsList').html(options);
+
+      // Use remembered value if there is one
+      if (localStorage.currentBoardId) {
+        $('#boardsList option[value="' + localStorage.currentBoardId + '"]').prop('selected', true);
+      }
+
+      return callback(null);
     });
-    
-    $('#boardsList').html(options);
-    
-    // Use remembered value if there is one
-    if (localStorage.currentBoardId) {
-      $('#boardsList option[value="' + localStorage.currentBoardId + '"]').prop('selected', true);
-    }
-    
-    return callback(null);
   });
+
 }
 
 
