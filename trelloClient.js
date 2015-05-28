@@ -113,6 +113,21 @@ TrelloClient.prototype.getAllBoards = function (cb) {
   });
 };
 
+TrelloClient.prototype.getAllOrganizations = function (cb) {
+  var self = this
+      , callback = cb || function() {};
+
+  $.ajax({ url: "https://api.trello.com/1/members/" + this.username + "/organizations?key=" + this.apiKey + "&token=" + this.clientToken }).done(function(data) {
+    var arrayLength = data.length;
+    self.organizations = {}
+    for (var i = 0; i < arrayLength; i++) {
+      self.organizations[data[i]["id"]] = data[i]
+    }
+    return callback(null);
+  }).fail(function() {
+    return callback("Unauthorized access");
+  });
+};
 
 TrelloClient.prototype.getAllLabelsNames = function(boardId, cb) {
   var self = this
