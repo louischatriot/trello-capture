@@ -58,7 +58,8 @@ Rectangle.prototype.persistOnCanvas = function (cb) {
     ;
 
   this.ms.ctx.beginPath();
-  this.ms.ctx.setLineWidth(6);
+  //this.ms.ctx.setLineWidth(6);
+  this.ms.ctx.lineWidth = 6;
   this.ms.ctx.rect(left, top, width, height);
   this.ms.ctx.strokeStyle = this.color;   // TODO: understand why the change in stroke color is system-wide
   this.ms.ctx.shadowColor = '#666666';
